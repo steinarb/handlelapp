@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Steinar Bang
+ * Copyright 2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,41 +13,44 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.handlelapp.services;
+package no.priv.bang.handlelapp.services.beans;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-class LoginresultatTest {
+import no.priv.bang.osgiservice.users.User;
+
+class LoginresultTest {
 
     @Test
     void testCreate() {
-        boolean suksess = true;
+        boolean success = true;
         boolean authorized = true;
-        String feilmelding = "Feil passord";
+        String errormessage = "Feil passord";
         String originalRequestUrl = "http://localhost:8181/handlelapp/hurtigregistrering";
         String username = "jod";
+        User user = User.with().username(username).build();
         Loginresult bean = Loginresult.with()
-            .suksess(suksess)
-            .feilmelding(feilmelding)
+            .success(success)
+            .errormessage(errormessage)
             .authorized(authorized)
-            .username(username)
+            .user(user)
             .originalRequestUrl(originalRequestUrl)
             .build();
-        assertTrue(bean.getSuksess());
-        assertEquals(feilmelding, bean.getFeilmelding());
+        assertTrue(bean.getSuccess());
+        assertEquals(errormessage, bean.getErrormessage());
         assertTrue(bean.isAuthorized());
-        assertEquals(username, bean.getUsername());
+        assertEquals(username, bean.getUser().getUsername());
         assertEquals(originalRequestUrl, bean.getOriginalRequestUrl());
     }
 
     @Test
     void testNoargsConstructor() {
         Loginresult bean = Loginresult.with().build();
-        assertFalse(bean.getSuksess());
-        assertNull(bean.getFeilmelding());
+        assertFalse(bean.getSuccess());
+        assertNull(bean.getErrormessage());
         assertFalse(bean.isAuthorized());
         assertNull(bean.getOriginalRequestUrl());
     }
@@ -55,7 +58,7 @@ class LoginresultatTest {
     @Test
     void testToString() {
         Loginresult bean = Loginresult.with().build();
-        assertThat(bean.toString()).startsWith("Loginresultat [");
+        assertThat(bean.toString()).startsWith("Loginresult [");
     }
 
 }

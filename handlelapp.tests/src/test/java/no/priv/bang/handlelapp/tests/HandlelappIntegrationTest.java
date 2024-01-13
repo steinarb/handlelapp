@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Steinar Bang
+ * Copyright 2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,12 @@ public class HandlelappIntegrationTest extends KarafTestSupport {
 
     @Configuration
     public Option[] config() {
-        final MavenArtifactUrlReference handlelappFeatureRepo = maven().groupId("no.priv.bang.handlelapp").artifactId("karaf").version("LATEST").type("xml").classifier("features");
+        final MavenArtifactUrlReference handlelappFeatureRepo = maven()
+            .groupId("no.priv.bang.handlelapp")
+            .artifactId("karaf")
+            .versionAsInProject()
+            .type("xml")
+            .classifier("features");
         Option[] options = new Option[] {
             features(handlelappFeatureRepo)
         };

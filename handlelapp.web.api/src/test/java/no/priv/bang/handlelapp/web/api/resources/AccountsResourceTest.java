@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Steinar Bang
+ * Copyright 2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import no.priv.bang.handlelapp.services.Account;
 import no.priv.bang.handlelapp.services.HandlelappService;
+import no.priv.bang.handlelapp.services.beans.Account;
 
 class AccountsResourceTest {
 

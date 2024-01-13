@@ -3,8 +3,8 @@ import axios from 'axios';
 import {
     DEFAULT_LOCALE_REQUEST,
     DEFAULT_LOCALE_RECEIVE,
-    DEFAULT_LOCALE_ERROR,
-} from '../actiontypes';
+    DEFAULT_LOCALE_FAILURE,
+} from '../reduxactions';
 
 // watcher saga
 export default function* defaultLocaleSaga() {
@@ -12,7 +12,7 @@ export default function* defaultLocaleSaga() {
 }
 
 function doDefaultLocale() {
-    return axios.get('/handlelapp/api/defaultlocale');
+    return axios.get('/api/defaultlocale');
 }
 
 // worker saga
@@ -22,6 +22,6 @@ function* receiveDefaultLocaleSaga() {
         const defaultLocale = (response.headers['content-type'] == 'application/json') ? response.data : '';
         yield put(DEFAULT_LOCALE_RECEIVE(defaultLocale));
     } catch (error) {
-        yield put(DEFAULT_LOCALE_ERROR(error));
+        yield put(DEFAULT_LOCALE_FAILURE(error));
     }
 }

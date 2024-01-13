@@ -1,24 +1,16 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-function LoginMessage(props) {
-    const { loginresultat } = props;
-    if (!loginresultat.feilmelding) {
+export default function LoginMessage() {
+    const loginresult = useSelector(state => state.loginresult);
+
+    if (!loginresult.errormessage) {
         return null;
     }
 
     return (
         <div className='alert alert-warning' role='alert'>
-            {loginresultat.feilmelding}
+            {loginresult.errormessage}
         </div>
     );
 }
-
-function mapStateToProps(state) {
-    const { loginresultat } = state;
-    return {
-        loginresultat,
-    };
-}
-
-export default connect(mapStateToProps)(LoginMessage);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Steinar Bang
+ * Copyright 2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,17 +22,35 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
+import no.priv.bang.handlelapp.services.beans.Account;
+import no.priv.bang.handlelapp.services.beans.CounterBean;
+import no.priv.bang.handlelapp.services.beans.CounterIncrementStepBean;
+import no.priv.bang.handlelapp.services.beans.LocaleBean;
 
 class HandlelappServiceTest {
 
     @Test
     void testOfAllOfTheMethods() {
         HandlelappService service = mock(HandlelappService.class);
+        String username = "jad";
+        boolean created = service.lazilyCreateAccount(username);
+        assertFalse(created);
         List<Account> accounts = service.getAccounts();
         assertThat(accounts).isEmpty();
+        Optional<CounterIncrementStepBean> incrementStep = service.getCounterIncrementStep(username);
+        assertTrue(incrementStep.isEmpty());
+        Optional<CounterIncrementStepBean> updatedStep = service.updateCounterIncrementStep(CounterIncrementStepBean.with().build());
+        assertTrue(updatedStep.isEmpty());
+        Optional<CounterBean> counter = service.getCounter(username);
+        assertTrue(counter.isEmpty());
+        Optional<CounterBean> incrementedCounter = service.incrementCounter(username);
+        assertTrue(incrementedCounter.isEmpty());
+        Optional<CounterBean> decrementedCounter = service.decrementCounter(username);
+        assertTrue(decrementedCounter.isEmpty());
         Locale defaultLocale = service.defaultLocale();
         assertNull(defaultLocale);
         List<LocaleBean> availableLocales = service.availableLocales();

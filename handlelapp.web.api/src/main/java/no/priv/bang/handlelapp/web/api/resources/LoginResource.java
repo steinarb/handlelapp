@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Steinar Bang
+ * Copyright 2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,9 +41,12 @@ import org.apache.shiro.web.util.WebUtils;
 import org.osgi.service.log.LogService;
 import org.osgi.service.log.Logger;
 
-import no.priv.bang.handlelapp.services.Credentials;
-import no.priv.bang.handlelapp.services.Loginresult;
+import no.priv.bang.authservice.definitions.AuthserviceException;
+import no.priv.bang.osgiservice.users.User;
+import no.priv.bang.osgiservice.users.UserManagementService;
 import no.priv.bang.handlelapp.services.HandlelappService;
+import no.priv.bang.handlelapp.services.beans.Credentials;
+import no.priv.bang.handlelapp.services.beans.Loginresult;
 
 @Path("")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -53,10 +56,13 @@ public class LoginResource {
     private Logger logger;
 
     @Context
-    private HttpServletRequest request;
+    HttpServletRequest request;
 
     @Inject
     HandlelappService handlelapp;
+
+    @Inject
+    UserManagementService useradmin;
 
     @Inject
     void setLogservice(LogService logservice) {
@@ -67,32 +73,38 @@ public class LoginResource {
     @Path("/login")
     public Loginresult login(@QueryParam("locale")String locale, Credentials credentials) {
         Subject subject = SecurityUtils.getSubject();
+        String username = credentials.getUsername();
 
-        UsernamePasswordToken token = new UsernamePasswordToken(credentials.getUsername(), credentials.getPassword().toCharArray(), true);
+        UsernamePasswordToken token = new UsernamePasswordToken(username, credentials.getPassword().toCharArray(), true);
         try {
             subject.login(token);
-            SavedRequest savedRequest = WebUtils.getSavedRequest(request);
-            String originalRequestUrl = savedRequest != null ? savedRequest.getRequestUrl() : null;
+            String originalRequestUrl = findOriginalRequestUrl();
+            boolean authorized = subject.hasRole(HANDLELAPPUSER_ROLE);
+            if (authorized) {
+                handlelapp.lazilyCreateAccount(username);
+            }
+
+            User user = useradmin.getUser(username);
 
             return Loginresult.with()
-                .suksess(true)
-                .feilmelding("")
-                .authorized(subject.hasRole(SAMPLEAPPUSER_ROLE))
-                .username(credentials.getUsername())
+                .success(true)
+                .errormessage("")
+                .authorized(authorized)
+                .user(user)
                 .originalRequestUrl(originalRequestUrl)
                 .build();
         } catch(UnknownAccountException e) {
             logger.warn("Login error: unknown account", e);
-            return Loginresult.with().suksess(false).feilmelding(handlelapp.displayText("unknownaccount", locale)).build();
+            return Loginresult.with().success(false).errormessage(handlelapp.displayText("unknownaccount", locale)).build();
         } catch (IncorrectCredentialsException  e) {
             logger.warn("Login error: wrong password", e);
-            return Loginresult.with().suksess(false).feilmelding(handlelapp.displayText("wrongpassword", locale)).build();
+            return Loginresult.with().success(false).errormessage(handlelapp.displayText("wrongpassword", locale)).build();
         } catch (LockedAccountException  e) {
             logger.warn("Login error: locked account", e);
-            return Loginresult.with().suksess(false).feilmelding(handlelapp.displayText("lockedaccount", locale)).build();
+            return Loginresult.with().success(false).errormessage(handlelapp.displayText("lockedaccount", locale)).build();
         } catch (AuthenticationException e) {
             logger.warn("Login error: general authentication error", e);
-            return Loginresult.with().suksess(false).feilmelding(handlelapp.displayText("unknownerror", locale)).build();
+            return Loginresult.with().success(false).errormessage(handlelapp.displayText("unknownerror", locale)).build();
         } catch (Exception e) {
             logger.error("Login error: internal server error", e);
             throw new InternalServerErrorException();
@@ -108,8 +120,9 @@ public class LoginResource {
         subject.logout();
 
         return Loginresult.with()
-            .suksess(false)
-            .feilmelding(handlelapp.displayText("loggedout", locale))
+            .success(false)
+            .errormessage(handlelapp.displayText("loggedout", locale))
+            .user(User.with().build())
             .build();
     }
 
@@ -118,18 +131,38 @@ public class LoginResource {
     public Loginresult loginstate(@QueryParam("locale")String locale) {
         Subject subject = SecurityUtils.getSubject();
         String username = (String) subject.getPrincipal();
-        boolean suksess = subject.isAuthenticated();
-        boolean harRoleSampleappuser = subject.hasRole(SAMPLEAPPUSER_ROLE);
-        String brukerLoggetInnMelding = harRoleSampleappuser ?
+        boolean success = subject.isAuthenticated();
+        boolean harRoleHandlelappuser = subject.hasRole(HANDLELAPPUSER_ROLE);
+        String brukerLoggetInnMelding = harRoleHandlelappuser ?
             handlelapp.displayText("userloggedinwithaccesses", locale) :
             handlelapp.displayText("userloggedinwithoutaccesses", locale);
-        String melding = suksess ? brukerLoggetInnMelding : handlelapp.displayText("usernotloggedin", locale);
+        String melding = success ? brukerLoggetInnMelding : handlelapp.displayText("usernotloggedin", locale);
+        User user = findUserSafely(username);
         return Loginresult.with()
-            .suksess(suksess)
-            .feilmelding(melding)
-            .authorized(harRoleSampleappuser)
-            .username(username)
+            .success(success)
+            .errormessage(melding)
+            .authorized(harRoleHandlelappuser)
+            .user(user)
             .build();
+    }
+
+    User findUserSafely(String username) {
+        try {
+            return useradmin.getUser(username);
+        } catch (AuthserviceException e) {
+            return User.with().build();
+        }
+    }
+
+    String findOriginalRequestUrl() {
+        SavedRequest savedRequest = WebUtils.getSavedRequest(request);
+        String contextPath = request.getContextPath();
+        String originalRequestUrl = savedRequest != null ? savedRequest.getRequestUrl() : null;
+        if (contextPath != null && originalRequestUrl != null) {
+            return originalRequestUrl.replaceFirst(contextPath, "");
+        }
+
+        return originalRequestUrl;
     }
 
 }

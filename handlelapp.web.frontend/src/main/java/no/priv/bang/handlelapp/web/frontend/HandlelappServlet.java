@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Steinar Bang
+ * Copyright 2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ public class HandlelappServlet extends FrontendServlet {
         // The paths used by the react router
         setRoutes(
             "/",
+            "/counter",
             "/login",
             "/unauthorized");
     }

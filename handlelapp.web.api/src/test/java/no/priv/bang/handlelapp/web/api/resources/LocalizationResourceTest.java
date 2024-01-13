@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Steinar Bang
+ * Copyright 2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import no.priv.bang.osgi.service.mocks.logservice.MockLogService;
-import no.priv.bang.handlelapp.services.LocaleBean;
 import no.priv.bang.handlelapp.services.HandlelappService;
+import no.priv.bang.handlelapp.services.beans.LocaleBean;
 
 class LocalizationResourceTest {
     private final static Locale NB_NO = Locale.forLanguageTag("nb-no");

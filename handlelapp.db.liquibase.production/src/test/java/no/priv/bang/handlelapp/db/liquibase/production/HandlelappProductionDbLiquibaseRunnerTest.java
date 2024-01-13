@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Steinar Bang
+ * Copyright 2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,20 @@
  */
 package no.priv.bang.handlelapp.db.liquibase.production;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.ops4j.pax.jdbc.derby.impl.DerbyDataSourceFactory;
 import org.osgi.service.jdbc.DataSourceFactory;
-
-import no.priv.bang.osgi.service.mocks.logservice.MockLogService;
 
 class HandlelappProductionDbLiquibaseRunnerTest {
 
@@ -37,9 +39,7 @@ class HandlelappProductionDbLiquibaseRunnerTest {
         properties.setProperty(DataSourceFactory.JDBC_URL, "jdbc:derby:memory:handlelapp;create=true");
         DataSource datasource = dataSourceFactory.createDataSource(properties);
 
-        MockLogService logservice = new MockLogService();
         HandlelappProductionDbLiquibaseRunner runner = new HandlelappProductionDbLiquibaseRunner();
-        runner.setLogService(logservice);
         runner.activate();
         runner.prepare(datasource);
         addAccount(datasource, "jd");
@@ -47,9 +47,89 @@ class HandlelappProductionDbLiquibaseRunnerTest {
     }
 
 
+    @Test
+    void testFailInGettingConnectionWhenCreatingInitialSchema() throws Exception {
+        DataSource datasource = mock(DataSource.class);
+        when(datasource.getConnection()).thenThrow(new SQLException("Failed to get connection"));
+
+        var runner = new HandlelappProductionDbLiquibaseRunner();
+        runner.activate();
+        var e = assertThrows(
+            SQLException.class,
+            () -> runner.prepare(datasource));
+        assertThat(e.getMessage()).startsWith("Failed to get connection");
+    }
+
+
+    @Test
+    void testFailWhenCreatingInitialSchema() throws Exception {
+        Connection connection = spy(createDataSource("handlelapp1").getConnection());
+        DataSource datasource = mock(DataSource.class);
+        when(datasource.getConnection()).thenReturn(connection);
+
+        var runner = new HandlelappProductionDbLiquibaseRunner();
+        runner.activate();
+        var e = assertThrows(
+            SQLException.class,
+            () -> runner.prepare(datasource));
+        assertThat(e.getMessage()).startsWith("Failed to create schema in handlelapp PostgreSQL database");
+    }
+
+    @Test
+    void testFailWhenAddingMockData() throws Exception {
+        var connection = spy(createDataSource("handlelapp1").getConnection());
+        DataSource datasource = spy(createDataSource("handlelapp2"));
+        when(datasource.getConnection())
+            .thenCallRealMethod()
+            .thenReturn(connection);
+
+        var runner = new HandlelappProductionDbLiquibaseRunner();
+        runner.activate();
+        var e = assertThrows(
+            SQLException.class,
+            () -> runner.prepare(datasource));
+        assertThat(e.getMessage()).startsWith("Failed to insert initial data into handlelapp PostgreSQL database");
+    }
+
+
+    @Test
+    void testFailWhenGettingConnectionForUpdatingSchema() throws Exception {
+        DataSource datasource = spy(createDataSource("handlelapp3"));
+        when(datasource.getConnection())
+            .thenCallRealMethod()
+            .thenCallRealMethod()
+            .thenThrow(new SQLException("Failed to get connection"));
+
+        var runner = new HandlelappProductionDbLiquibaseRunner();
+        runner.activate();
+        var e = assertThrows(
+            SQLException.class,
+            () -> runner.prepare(datasource));
+        assertThat(e.getMessage()).startsWith("Failed to get connection");
+    }
+
+
+    @Test
+    void testFailWhenUpdatingSchema() throws Exception {
+        var connection = spy(createDataSource("handlelapp4").getConnection());
+        DataSource datasource = spy(createDataSource("handlelapp4"));
+        when(datasource.getConnection())
+            .thenCallRealMethod()
+            .thenCallRealMethod()
+            .thenReturn(connection);
+
+        var runner = new HandlelappProductionDbLiquibaseRunner();
+        runner.activate();
+        var e = assertThrows(
+            SQLException.class,
+            () -> runner.prepare(datasource));
+        assertThat(e.getMessage()).startsWith("Failed to modify schema of handlelapp PostgreSQL database");
+    }
+
+
     private void assertAccounts(DataSource datasource) throws Exception {
         try (Connection connection = datasource.getConnection()) {
-            try(PreparedStatement statement = connection.prepareStatement("select * from accounts")) {
+            try(PreparedStatement statement = connection.prepareStatement("select * from handlelapp_accounts")) {
                 try (ResultSet results = statement.executeQuery()) {
                     assertAccount(results, "jd");
                 }
@@ -64,14 +144,14 @@ class HandlelappProductionDbLiquibaseRunnerTest {
 
     private int addAccount(DataSource datasource, String username) throws Exception {
         try (Connection connection = datasource.getConnection()) {
-            try(PreparedStatement statement = connection.prepareStatement("insert into accounts (username) values (?)")) {
+            try(PreparedStatement statement = connection.prepareStatement("insert into handlelapp_accounts (username) values (?)")) {
                 statement.setString(1, username);
                 statement.executeUpdate();
             }
         }
         int accountId = -1;
         try (Connection connection = datasource.getConnection()) {
-            try(PreparedStatement statement = connection.prepareStatement("select * from accounts where username=?")) {
+            try(PreparedStatement statement = connection.prepareStatement("select * from handlelapp_accounts where username=?")) {
                 statement.setString(1, username);
                 try (ResultSet results = statement.executeQuery()) {
                     results.next();
@@ -80,6 +160,15 @@ class HandlelappProductionDbLiquibaseRunnerTest {
             }
         }
         return accountId;
+    }
+
+
+    private DataSource createDataSource(String dbname) throws SQLException {
+        DataSourceFactory dataSourceFactory = new DerbyDataSourceFactory();
+        Properties properties = new Properties();
+        properties.setProperty(DataSourceFactory.JDBC_URL, "jdbc:derby:memory:" + dbname + ";create=true");
+        DataSource datasource = dataSourceFactory.createDataSource(properties);
+        return datasource;
     }
 
 }

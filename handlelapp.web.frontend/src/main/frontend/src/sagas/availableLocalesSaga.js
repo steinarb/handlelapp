@@ -3,8 +3,8 @@ import axios from 'axios';
 import {
     AVAILABLE_LOCALES_REQUEST,
     AVAILABLE_LOCALES_RECEIVE,
-    AVAILABLE_LOCALES_ERROR,
-} from '../actiontypes';
+    AVAILABLE_LOCALES_FAILURE,
+} from '../reduxactions';
 
 // watcher saga
 export default function* availableLocalesSaga() {
@@ -12,7 +12,7 @@ export default function* availableLocalesSaga() {
 }
 
 function doAvailableLocales() {
-    return axios.get('/handlelapp/api/availablelocales');
+    return axios.get('/api/availablelocales');
 }
 
 // worker saga
@@ -22,6 +22,6 @@ function* receiveAvailableLocalesSaga() {
         const availableLocales = (response.headers['content-type'] == 'application/json') ? response.data : [];
         yield put(AVAILABLE_LOCALES_RECEIVE(availableLocales));
     } catch (error) {
-        yield put(AVAILABLE_LOCALES_ERROR(error));
+        yield put(AVAILABLE_LOCALES_FAILURE(error));
     }
 }

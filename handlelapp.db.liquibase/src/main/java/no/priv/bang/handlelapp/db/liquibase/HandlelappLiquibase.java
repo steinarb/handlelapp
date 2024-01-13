@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Steinar Bang
+ * Copyright 2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,16 @@
 package no.priv.bang.handlelapp.db.liquibase;
 
 import java.sql.Connection;
-import liquibase.Liquibase;
-import liquibase.database.DatabaseConnection;
+import java.util.Map;
+
+import liquibase.Scope;
+import liquibase.Scope.ScopedRunner;
+import liquibase.changelog.ChangeLogParameters;
+import liquibase.command.CommandScope;
+import liquibase.command.core.UpdateCommandStep;
+import liquibase.command.core.helpers.DatabaseChangelogCommandStep;
+import liquibase.command.core.helpers.DbUrlConnectionCommandStep;
+import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
@@ -32,20 +40,27 @@ public class HandlelappLiquibase {
         applyLiquibaseChangelist(connection, "handlelapp-db-changelog/db-changelog-1.0.1.xml");
     }
 
-    public void forceReleaseLocks(Connection connection) throws LiquibaseException {
-        Liquibase liquibase = createLiquibaseInstance(connection, "handlelapp-db-changelog/db-changelog-1.0.0.xml");
-        liquibase.forceReleaseLocks();
+    public void applyLiquibaseChangelist(Connection connection, String changelistClasspathResource, ClassLoader classLoader) throws LiquibaseException {
+        try (var database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection))) {
+            Map<String, Object> scopeObjects = Map.of(
+                Scope.Attr.database.name(), database,
+                Scope.Attr.resourceAccessor.name(), new ClassLoaderResourceAccessor(classLoader));
+
+            Scope.child(scopeObjects, (ScopedRunner<?>) () -> new CommandScope("update")
+                        .addArgumentValue(DbUrlConnectionCommandStep.DATABASE_ARG, database)
+                        .addArgumentValue(UpdateCommandStep.CHANGELOG_FILE_ARG, changelistClasspathResource)
+                        .addArgumentValue(DatabaseChangelogCommandStep.CHANGELOG_PARAMETERS, new ChangeLogParameters(database))
+                        .execute());
+        } catch (LiquibaseException e) {
+            throw e;
+        } catch (Exception e) {
+            // AutoClosable.close() may throw Exception
+            throw new LiquibaseException(e);
+        }
     }
 
     private void applyLiquibaseChangelist(Connection connection, String changelistClasspathResource) throws LiquibaseException {
-        Liquibase liquibase = createLiquibaseInstance(connection, changelistClasspathResource);
-        liquibase.update("");
-    }
-
-    private Liquibase createLiquibaseInstance(Connection connection, String changelistClasspathResource) throws LiquibaseException {
-        DatabaseConnection databaseConnection = new JdbcConnection(connection);
-        ClassLoaderResourceAccessor classLoaderResourceAccessor = new ClassLoaderResourceAccessor(getClass().getClassLoader());
-        return new Liquibase(changelistClasspathResource, classLoaderResourceAccessor, databaseConnection);
+        applyLiquibaseChangelist(connection, changelistClasspathResource, getClass().getClassLoader());
     }
 
 }

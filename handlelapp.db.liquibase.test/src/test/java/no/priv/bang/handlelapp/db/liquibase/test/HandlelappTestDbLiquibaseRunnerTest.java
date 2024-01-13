@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Steinar Bang
+ * Copyright 2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
 package no.priv.bang.handlelapp.db.liquibase.test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -26,38 +29,114 @@ import org.junit.jupiter.api.Test;
 import org.ops4j.pax.jdbc.derby.impl.DerbyDataSourceFactory;
 import org.osgi.service.jdbc.DataSourceFactory;
 
-import no.priv.bang.osgi.service.mocks.logservice.MockLogService;
-
 class HandlelappTestDbLiquibaseRunnerTest {
 
     @Test
     void testCreateAndVerifySomeDataInSomeTables() throws Exception {
-        DataSourceFactory dataSourceFactory = new DerbyDataSourceFactory();
-        Properties properties = new Properties();
-        properties.setProperty(DataSourceFactory.JDBC_URL, "jdbc:derby:memory:handlelapp;create=true");
-        DataSource datasource = dataSourceFactory.createDataSource(properties);
+        DataSource datasource = createDataSource("handlelapp");
 
-        MockLogService logservice = new MockLogService();
         HandlelappTestDbLiquibaseRunner runner = new HandlelappTestDbLiquibaseRunner();
-        runner.setLogService(logservice);
         runner.activate();
         runner.prepare(datasource);
         assertAccounts(datasource);
     }
 
+    @Test
+    void testFailInGettingConnectionWhenCreatingInitialSchema() throws Exception {
+        DataSource datasource = mock(DataSource.class);
+        when(datasource.getConnection()).thenThrow(new SQLException("Failed to get connection"));
+
+        var runner = new HandlelappTestDbLiquibaseRunner();
+        runner.activate();
+        var e = assertThrows(
+            SQLException.class,
+            () -> runner.prepare(datasource));
+        assertThat(e.getMessage()).startsWith("Failed to get connection");
+    }
+
+    @Test
+    void testFailWhenCreatingInitialSchema() throws Exception {
+        Connection connection = spy(createDataSource("handlelapp1").getConnection());
+        DataSource datasource = mock(DataSource.class);
+        when(datasource.getConnection()).thenReturn(connection);
+
+        var runner = new HandlelappTestDbLiquibaseRunner();
+        runner.activate();
+        var e = assertThrows(
+            SQLException.class,
+            () -> runner.prepare(datasource));
+        assertThat(e.getMessage()).startsWith("Error creating handlelapp test database schema");
+    }
+
+    @Test
+    void testFailWhenAddingMockData() throws Exception {
+        var connection = spy(createDataSource("handlelapp1").getConnection());
+        DataSource datasource = spy(createDataSource("handlelapp2"));
+        when(datasource.getConnection())
+            .thenCallRealMethod()
+            .thenReturn(connection);
+
+        var runner = new HandlelappTestDbLiquibaseRunner();
+        runner.activate();
+        var e = assertThrows(
+            SQLException.class,
+            () -> runner.prepare(datasource));
+        assertThat(e.getMessage()).startsWith("Error inserting handlelapp test database mock data");
+    }
+
+    @Test
+    void testFailWhenGettingConnectionForUpdatingSchema() throws Exception {
+        DataSource datasource = spy(createDataSource("handlelapp3"));
+        when(datasource.getConnection())
+            .thenCallRealMethod()
+            .thenCallRealMethod()
+            .thenThrow(new SQLException("Failed to get connection"));
+
+        HandlelappTestDbLiquibaseRunner runner = new HandlelappTestDbLiquibaseRunner();
+        runner.activate();
+        var e = assertThrows(
+            SQLException.class,
+            () -> runner.prepare(datasource));
+        assertThat(e.getMessage()).startsWith("Failed to get connection");
+    }
+
+    @Test
+    void testFailWhenUpdatingSchema() throws Exception {
+        var connection = spy(createDataSource("handlelapp4").getConnection());
+        DataSource datasource = spy(createDataSource("handlelapp4"));
+        when(datasource.getConnection())
+            .thenCallRealMethod()
+            .thenCallRealMethod()
+            .thenReturn(connection);
+
+        var runner = new HandlelappTestDbLiquibaseRunner();
+        runner.activate();
+        var e = assertThrows(
+            SQLException.class,
+            () -> runner.prepare(datasource));
+        assertThat(e.getMessage()).startsWith("Error updating handlelapp test database schema");
+    }
+
     private void assertAccounts(DataSource datasource) throws Exception {
+        int resultcount = 0;
         try (Connection connection = datasource.getConnection()) {
-            try(PreparedStatement statement = connection.prepareStatement("select * from accounts")) {
+            try(PreparedStatement statement = connection.prepareStatement("select * from handlelapp_accounts")) {
                 try (ResultSet results = statement.executeQuery()) {
-                    assertAccount(results, "jod");
+                    while (results.next()) {
+                        ++resultcount;
+                    }
                 }
             }
         }
+        assertEquals(0, resultcount);
     }
 
-    private void assertAccount(ResultSet results, String username) throws Exception {
-        assertTrue(results.next());
-        assertEquals(username, results.getString(2)); // column 1 is the id
+    private DataSource createDataSource(String dbname) throws SQLException {
+        DataSourceFactory dataSourceFactory = new DerbyDataSourceFactory();
+        Properties properties = new Properties();
+        properties.setProperty(DataSourceFactory.JDBC_URL, "jdbc:derby:memory:" + dbname + ";create=true");
+        DataSource datasource = dataSourceFactory.createDataSource(properties);
+        return datasource;
     }
 
 }

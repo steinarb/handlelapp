@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Steinar Bang
+ * Copyright 2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ import javax.ws.rs.core.MediaType;
 import org.osgi.service.log.LogService;
 import org.osgi.service.log.Logger;
 
-import no.priv.bang.handlelapp.services.LocaleBean;
 import no.priv.bang.handlelapp.services.HandlelappService;
+import no.priv.bang.handlelapp.services.beans.LocaleBean;
 
 @Path("")
 public class LocalizationResource extends ResourceBase {

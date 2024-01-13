@@ -1,23 +1,25 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xml:space="preserve">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
 
-    <!-- Copyright 2021 Steinar Bang                                                     -->
-    <!--                                                                                 -->
-    <!-- Licensed under the Apache License, Version 2.0 (the "License");                 -->
-    <!-- you may not use this file except in compliance with the License.                -->
-    <!-- You may obtain a copy of the License at                                         -->
-    <!--   http://www.apache.org/licenses/LICENSE-2.0                                    -->
-    <!-- Unless required by applicable law or agreed to in writing,                      -->
-    <!-- software distributed under the License is distributed on an "AS IS" BASIS,      -->
-    <!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.        -->
-    <!-- See the License for the specific language governing permissions and limitations -->
-    <!-- under the License.                                                              -->
+Copyright 2024 Steinar Bang
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and limitations
+under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xml:space="preserve" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>no.priv.bang.pom</groupId>
-        <artifactId>bang-app-pom</artifactId>
-        <version>1.0.17</version>
+        <artifactId>bang-authservice-client-pom</artifactId>
+        <version>1.1.44</version>
     </parent>
     <groupId>no.priv.bang.handlelapp</groupId>
     <artifactId>handlelapp</artifactId>
@@ -27,33 +29,17 @@
 
     <name>Handlelapp</name>
 
-    <modules>
-        <module>handlelapp.db.liquibase</module>
-        <module>handlelapp.db.liquibase.test</module>
-        <module>handlelapp.db.liquibase.production</module>
-        <module>handlelapp.services</module>
-        <module>handlelapp.backend</module>
-        <module>handlelapp.backend.testdata</module>
-        <module>handlelapp.web.security</module>
-        <module>handlelapp.web.api</module>
-        <module>handlelapp.web.frontend</module>
-        <module>karaf</module>
-        <module>handlelapp.tests</module>
-        <module>jacoco-coverage-report</module>
-    </modules>
-
     <properties>
-        <authservice.version>1.13.9</authservice.version>
         <snakeyaml.version>1.17</snakeyaml.version>
         <open-iconic.version>1.1.1</open-iconic.version>
-        <sonar.cpd.exclusions>
-            **/HandlelappServiceProvider.java,
+        <sonar.cpd.exclusions>**/HandlelappServiceProvider.java,
             **/HandlelappTestDbLiquibaseRunner.java,
-            **/HandlelappProductionDbLiquibaseRunner.java,
-        </sonar.cpd.exclusions>
-        <sonar.issue.ignore.multicriteria>e1</sonar.issue.ignore.multicriteria>
-        <sonar.issue.ignore.multicriteria.e1.ruleKey>squid:S2160</sonar.issue.ignore.multicriteria.e1.ruleKey>
-        <sonar.issue.ignore.multicriteria.e1.resourceKey>**/handlelapp.services/**/*.java</sonar.issue.ignore.multicriteria.e1.resourceKey>
+            **/HandlelappProductionDbLiquibaseRunner.java,</sonar.cpd.exclusions>
+        <sonar.issue.ignore.multicriteria>e1,e2</sonar.issue.ignore.multicriteria>
+        <sonar.issue.ignore.multicriteria.e1.ruleKey>java:S2160</sonar.issue.ignore.multicriteria.e1.ruleKey>
+        <sonar.issue.ignore.multicriteria.e1.resourceKey>**/sampleapp.services/**/*.java</sonar.issue.ignore.multicriteria.e1.resourceKey>
+        <sonar.issue.ignore.multicriteria.e2.ruleKey>java:S5976</sonar.issue.ignore.multicriteria.e2.ruleKey>
+        <sonar.issue.ignore.multicriteria.e2.resourceKey>**/HandlelappWebApiTest.java</sonar.issue.ignore.multicriteria.e2.resourceKey>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../jacoco-coverage-report/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
@@ -136,37 +122,6 @@
     </dependencyManagement>
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>ru.yaal.maven</groupId>
-                                        <artifactId>write-text-files-maven-plugin</artifactId>
-                                        <versionRange>[1.1,)</versionRange>
-                                        <goals>
-                                            <goal>
-                                                write-text-files
-                                            </goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore></ignore>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -247,4 +202,16 @@
         </profile>
     </profiles>
 
-</project>
+<modules>  <module>handlelapp.db.liquibase</module>
+    <module>handlelapp.db.liquibase.test</module>
+    <module>handlelapp.db.liquibase.production</module>
+    <module>handlelapp.services</module>
+    <module>handlelapp.backend</module>
+    <module>handlelapp.backend.testdata</module>
+    <module>handlelapp.web.security</module>
+    <module>handlelapp.web.api</module>
+    <module>handlelapp.web.frontend</module>
+    <module>karaf</module>
+    <module>handlelapp.tests</module>
+    <module>jacoco-coverage-report</module>
+  </modules></project>

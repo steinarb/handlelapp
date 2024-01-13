@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Steinar Bang
+ * Copyright 2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.handlelapp.services;
+package no.priv.bang.handlelapp.services.beans;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import no.priv.bang.osgiservice.users.User;
-
-class AccountTest {
+class CounterIncrementStepBeanTest {
 
     @Test
     void testCreate() {
-        User user = User.with().build();
-        Account account = Account.with().accountId(1).user(user).build();
-        assertEquals(1, account.getAccountId());
-        assertEquals(user, account.getUser());
+        String username = "jad";
+        int counterIncrementStep = 3;
+        CounterIncrementStepBean bean = CounterIncrementStepBean.with()
+            .username(username)
+            .counterIncrementStep(counterIncrementStep)
+            .build();
+        assertNotNull(bean);
+        assertEquals(username, bean.getUsername());
+        assertEquals(counterIncrementStep, bean.getCounterIncrementStep());
     }
 
 }

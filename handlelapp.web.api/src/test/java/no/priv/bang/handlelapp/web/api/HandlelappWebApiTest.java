@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Steinar Bang
+ * Copyright 2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,10 @@
 package no.priv.bang.handlelapp.web.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletConfig;
@@ -45,14 +44,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.mockrunner.mock.web.MockHttpSession;
-import com.mockrunner.mock.web.MockServletOutputStream;
-
-import no.priv.bang.handlelapp.services.Account;
-import no.priv.bang.handlelapp.services.Credentials;
-import no.priv.bang.handlelapp.services.LocaleBean;
 import no.priv.bang.handlelapp.services.HandlelappService;
+import no.priv.bang.handlelapp.services.beans.Account;
+import no.priv.bang.handlelapp.services.beans.CounterBean;
+import no.priv.bang.handlelapp.services.beans.CounterIncrementStepBean;
+import no.priv.bang.handlelapp.services.beans.Credentials;
+import no.priv.bang.handlelapp.services.beans.LocaleBean;
 import no.priv.bang.handlelapp.web.api.resources.ErrorMessage;
 import no.priv.bang.osgi.service.mocks.logservice.MockLogService;
+import no.priv.bang.osgiservice.users.UserManagementService;
 
 class HandlelappWebApiTest extends ShiroTestBase {
     private final static Locale NB_NO = Locale.forLanguageTag("nb-no");
@@ -69,7 +69,8 @@ class HandlelappWebApiTest extends ShiroTestBase {
         Credentials credentials = Credentials.with().username(username).password(password).build();
         MockLogService logservice = new MockLogService();
         HandlelappService handlelapp = mock(HandlelappService.class);
-        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , logservice);
+        UserManagementService useradmin = mock(UserManagementService.class);
+        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
         createSubjectAndBindItToThread();
         MockHttpServletRequest request = buildPostUrl("/login");
         String postBody = mapper.writeValueAsString(credentials);
@@ -78,7 +79,6 @@ class HandlelappWebApiTest extends ShiroTestBase {
 
         servlet.service(request, response);
         assertEquals(200, response.getStatus());
-
     }
 
     @Test
@@ -88,7 +88,8 @@ class HandlelappWebApiTest extends ShiroTestBase {
         Credentials credentials = Credentials.with().username(username).password(password).build();
         MockLogService logservice = new MockLogService();
         HandlelappService handlelapp = mock(HandlelappService.class);
-        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , logservice);
+        UserManagementService useradmin = mock(UserManagementService.class);
+        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
         createSubjectAndBindItToThread();
         MockHttpServletRequest request = buildPostUrl("/login");
         String postBody = mapper.writeValueAsString(credentials);
@@ -105,16 +106,195 @@ class HandlelappWebApiTest extends ShiroTestBase {
         HandlelappService handlelapp = mock(HandlelappService.class);
         Account account = Account.with().accountId(123).build();
         when(handlelapp.getAccounts()).thenReturn(Collections.singletonList(account));
-        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , logservice);
+        UserManagementService useradmin = mock(UserManagementService.class);
+        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
         MockHttpServletRequest request = buildGetUrl("/accounts");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         loginUser(request, response, "jd", "johnnyBoi");
         servlet.service(request, response);
         assertEquals(200, response.getStatus());
-        List<Account> accounts = mapper.readValue(getBinaryContent(response), new TypeReference<List<Account>>() {});
+        List<Account> accounts = mapper.readValue(response.getOutputStreamBinaryContent(), new TypeReference<List<Account>>() {});
         assertThat(accounts).isNotEmpty();
     }
+
+    @Test
+    void testGetCounterIncrementStep() throws Exception {
+        int incrementStepValue = 1;
+        MockLogService logservice = new MockLogService();
+        HandlelappService handlelapp = mock(HandlelappService.class);
+        Optional<CounterIncrementStepBean> optionalIncrementStep = Optional.of(CounterIncrementStepBean.with().counterIncrementStep(incrementStepValue).build());
+        when(handlelapp.getCounterIncrementStep(anyString())).thenReturn(optionalIncrementStep);
+        UserManagementService useradmin = mock(UserManagementService.class);
+        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        MockHttpServletRequest request = buildGetUrl("/counter/incrementstep/jad");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        loginUser(request, response, "jad", "1ad");
+        servlet.service(request, response);
+        assertEquals(200, response.getStatus());
+        CounterIncrementStepBean bean = mapper.readValue(response.getOutputStreamBinaryContent(), CounterIncrementStepBean.class);
+        assertEquals(incrementStepValue, bean.getCounterIncrementStep());
+    }
+
+    @Test
+    void testGetCounterIncrementStepWhenNotFound() throws Exception {
+        MockLogService logservice = new MockLogService();
+        HandlelappService handlelapp = mock(HandlelappService.class);
+        UserManagementService useradmin = mock(UserManagementService.class);
+        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        MockHttpServletRequest request = buildGetUrl("/counter/incrementstep/jad");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        loginUser(request, response, "jad", "1ad");
+        servlet.service(request, response);
+        assertEquals(404, response.getStatus());
+    }
+
+    @Test
+    void testUpdateCounterIncrementStep() throws Exception {
+        int incrementStepValue = 1;
+        MockLogService logservice = new MockLogService();
+        HandlelappService handlelapp = mock(HandlelappService.class);
+        Optional<CounterIncrementStepBean> optionalIncrementStep = Optional.of(CounterIncrementStepBean.with().counterIncrementStep(incrementStepValue).build());
+        when(handlelapp.updateCounterIncrementStep(any())).thenReturn(optionalIncrementStep);
+        UserManagementService useradmin = mock(UserManagementService.class);
+        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        CounterIncrementStepBean updateIncrementStep = CounterIncrementStepBean.with()
+            .username("jad")
+            .counterIncrementStep(incrementStepValue)
+            .build();
+        MockHttpServletRequest request = buildPostUrl("/counter/incrementstep");
+        String postBody = mapper.writeValueAsString(updateIncrementStep);
+        request.setBodyContent(postBody);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        loginUser(request, response, "jad", "1ad");
+        servlet.service(request, response);
+        assertEquals(200, response.getStatus());
+        CounterIncrementStepBean bean = mapper.readValue(response.getOutputStreamBinaryContent(), CounterIncrementStepBean.class);
+        assertEquals(incrementStepValue, bean.getCounterIncrementStep());
+    }
+
+    @Test
+    void testUpdateCounterIncrementStepWhenUpdateFails() throws Exception {
+        MockLogService logservice = new MockLogService();
+        HandlelappService handlelapp = mock(HandlelappService.class);
+        UserManagementService useradmin = mock(UserManagementService.class);
+        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        CounterIncrementStepBean updateIncrementStep = CounterIncrementStepBean.with()
+            .username("jad")
+            .counterIncrementStep(3)
+            .build();
+        MockHttpServletRequest request = buildPostUrl("/counter/incrementstep");
+        String postBody = mapper.writeValueAsString(updateIncrementStep);
+        request.setBodyContent(postBody);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        loginUser(request, response, "jad", "1ad");
+        servlet.service(request, response);
+        assertEquals(500, response.getStatus());
+    }
+
+    @Test
+    void testGetCounter() throws Exception {
+        int counterValue = 3;
+        MockLogService logservice = new MockLogService();
+        HandlelappService handlelapp = mock(HandlelappService.class);
+        Optional<CounterBean> optionalCounter = Optional.of(CounterBean.with().counter(counterValue).build());
+        when(handlelapp.getCounter(anyString())).thenReturn(optionalCounter);
+        UserManagementService useradmin = mock(UserManagementService.class);
+        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        MockHttpServletRequest request = buildGetUrl("/counter/jad");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        loginUser(request, response, "jad", "1ad");
+        servlet.service(request, response);
+        assertEquals(200, response.getStatus());
+        CounterBean bean = mapper.readValue(response.getOutputStreamBinaryContent(), CounterBean.class);
+        assertEquals(counterValue, bean.getCounter());
+    }
+
+    @Test
+    void testGetCounterWhenNotFound() throws Exception {
+        MockLogService logservice = new MockLogService();
+        HandlelappService handlelapp = mock(HandlelappService.class);
+        UserManagementService useradmin = mock(UserManagementService.class);
+        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        MockHttpServletRequest request = buildGetUrl("/counter/jad");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        loginUser(request, response, "jad", "1ad");
+        servlet.service(request, response);
+        assertEquals(404, response.getStatus());
+    }
+
+    @Test
+    void testIncrementCounter() throws Exception {
+        int counterValue = 3;
+        MockLogService logservice = new MockLogService();
+        HandlelappService handlelapp = mock(HandlelappService.class);
+        Optional<CounterBean> optionalCounter = Optional.of(CounterBean.with().counter(counterValue).build());
+        when(handlelapp.incrementCounter(anyString())).thenReturn(optionalCounter);
+        UserManagementService useradmin = mock(UserManagementService.class);
+        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        MockHttpServletRequest request = buildGetUrl("/counter/jad/increment");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        loginUser(request, response, "jad", "1ad");
+        servlet.service(request, response);
+        assertEquals(200, response.getStatus());
+        CounterBean bean = mapper.readValue(response.getOutputStreamBinaryContent(), CounterBean.class);
+        assertEquals(counterValue, bean.getCounter());
+    }
+
+    @Test
+    void testIncrementCounterWhenFailing() throws Exception {
+        MockLogService logservice = new MockLogService();
+        HandlelappService handlelapp = mock(HandlelappService.class);
+        UserManagementService useradmin = mock(UserManagementService.class);
+        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        MockHttpServletRequest request = buildGetUrl("/counter/jad/increment");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        loginUser(request, response, "jad", "1ad");
+        servlet.service(request, response);
+        assertEquals(500, response.getStatus());
+    }
+
+    @Test
+    void testDecrementCounter() throws Exception {
+        int counterValue = 3;
+        MockLogService logservice = new MockLogService();
+        HandlelappService handlelapp = mock(HandlelappService.class);
+        Optional<CounterBean> optionalCounter = Optional.of(CounterBean.with().counter(counterValue).build());
+        when(handlelapp.decrementCounter(anyString())).thenReturn(optionalCounter);
+        UserManagementService useradmin = mock(UserManagementService.class);
+        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        MockHttpServletRequest request = buildGetUrl("/counter/jad/decrement");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        loginUser(request, response, "jad", "1ad");
+        servlet.service(request, response);
+        assertEquals(200, response.getStatus());
+        CounterBean bean = mapper.readValue(response.getOutputStreamBinaryContent(), CounterBean.class);
+        assertEquals(counterValue, bean.getCounter());
+    }
+
+    @Test
+    void testDecrementCounterWhenFailing() throws Exception {
+        MockLogService logservice = new MockLogService();
+        HandlelappService handlelapp = mock(HandlelappService.class);
+        UserManagementService useradmin = mock(UserManagementService.class);
+        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        MockHttpServletRequest request = buildGetUrl("/counter/jad/decrement");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        loginUser(request, response, "jad", "1ad");
+        servlet.service(request, response);
+        assertEquals(500, response.getStatus());
+    }
+
     @Test
     void testDefaultLocale() throws Exception {
         // Set up REST API servlet with mocked services
@@ -122,7 +302,8 @@ class HandlelappWebApiTest extends ShiroTestBase {
         when(handlelapp.defaultLocale()).thenReturn(NB_NO);
         MockLogService logservice = new MockLogService();
 
-        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , logservice);
+        UserManagementService useradmin = mock(UserManagementService.class);
+        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
 
         // Create the request and response
         MockHttpServletRequest request = buildGetUrl("/defaultlocale");
@@ -134,7 +315,7 @@ class HandlelappWebApiTest extends ShiroTestBase {
         // Check the response
         assertEquals(200, response.getStatus());
         assertEquals("application/json", response.getContentType());
-        Locale defaultLocale = mapper.readValue(getBinaryContent(response), Locale.class);
+        Locale defaultLocale = mapper.readValue(response.getOutputStreamBinaryContent(), Locale.class);
         assertEquals(NB_NO, defaultLocale);
     }
     @Test
@@ -144,7 +325,8 @@ class HandlelappWebApiTest extends ShiroTestBase {
         when(handlelapp.availableLocales()).thenReturn(Collections.singletonList(Locale.forLanguageTag("nb-NO")).stream().map(l -> LocaleBean.with().locale(l).build()).collect(Collectors.toList()));
         MockLogService logservice = new MockLogService();
 
-        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , logservice);
+        UserManagementService useradmin = mock(UserManagementService.class);
+        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
 
         // Create the request and response
         MockHttpServletRequest request = buildGetUrl("/availablelocales");
@@ -156,7 +338,7 @@ class HandlelappWebApiTest extends ShiroTestBase {
         // Check the response
         assertEquals(200, response.getStatus());
         assertEquals("application/json", response.getContentType());
-        List<LocaleBean> availableLocales = mapper.readValue(getBinaryContent(response), new TypeReference<List<LocaleBean>>() {});
+        List<LocaleBean> availableLocales = mapper.readValue(response.getOutputStreamBinaryContent(), new TypeReference<List<LocaleBean>>() {});
         assertThat(availableLocales).isNotEmpty().contains(LocaleBean.with().locale(Locale.forLanguageTag("nb-NO")).build());
     }
 
@@ -169,7 +351,8 @@ class HandlelappWebApiTest extends ShiroTestBase {
         when(handlelapp.displayTexts(NB_NO)).thenReturn(texts);
         MockLogService logservice = new MockLogService();
 
-        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , logservice);
+        UserManagementService useradmin = mock(UserManagementService.class);
+        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
 
         // Create the request and response
         MockHttpServletRequest request = buildGetUrl("/displaytexts");
@@ -182,7 +365,7 @@ class HandlelappWebApiTest extends ShiroTestBase {
         // Check the response
         assertEquals(200, response.getStatus());
         assertEquals("application/json", response.getContentType());
-        Map<String, String> displayTexts = mapper.readValue(getBinaryContent(response), new TypeReference<Map<String, String>>() {});
+        Map<String, String> displayTexts = mapper.readValue(response.getOutputStreamBinaryContent(), new TypeReference<Map<String, String>>() {});
         assertThat(displayTexts).isNotEmpty();
     }
 
@@ -195,7 +378,8 @@ class HandlelappWebApiTest extends ShiroTestBase {
         when(handlelapp.displayTexts(EN_UK)).thenThrow(MissingResourceException.class);
         MockLogService logservice = new MockLogService();
 
-        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , logservice);
+        UserManagementService useradmin = mock(UserManagementService.class);
+        HandlelappWebApi servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
 
         // Create the request and response
         MockHttpServletRequest request = buildGetUrl("/displaytexts");
@@ -208,14 +392,9 @@ class HandlelappWebApiTest extends ShiroTestBase {
         // Check the response
         assertEquals(500, response.getStatus());
         assertEquals("application/json", response.getContentType());
-        ErrorMessage errorMessage = mapper.readValue(getBinaryContent(response), ErrorMessage.class);
+        ErrorMessage errorMessage = mapper.readValue(response.getOutputStreamBinaryContent(), ErrorMessage.class);
         assertEquals(500, errorMessage.getStatus());
         assertThat(errorMessage.getMessage()).startsWith("Unknown locale");
-    }
-
-    private byte[] getBinaryContent(MockHttpServletResponse response) throws IOException {
-        MockServletOutputStream outputstream = (MockServletOutputStream) response.getOutputStream();
-        return outputstream.getBinaryContent();
     }
 
     private MockHttpServletRequest buildGetUrl(String resource) {
@@ -245,10 +424,11 @@ class HandlelappWebApiTest extends ShiroTestBase {
         return request;
     }
 
-    private HandlelappWebApi simulateDSComponentActivationAndWebWhiteboardConfiguration(HandlelappService handlelapp, LogService logservice) throws Exception {
+    private HandlelappWebApi simulateDSComponentActivationAndWebWhiteboardConfiguration(HandlelappService handlelapp, UserManagementService useradmin, LogService logservice) throws Exception {
         HandlelappWebApi servlet = new HandlelappWebApi();
         servlet.setLogService(logservice);
         servlet.setHandlelappService(handlelapp);
+        servlet.setUseradmin(useradmin);
         servlet.activate();
         ServletConfig config = createServletConfigWithApplicationAndPackagenameForJerseyResources();
         servlet.init(config);
@@ -258,7 +438,7 @@ class HandlelappWebApiTest extends ShiroTestBase {
     private ServletConfig createServletConfigWithApplicationAndPackagenameForJerseyResources() {
         ServletConfig config = mock(ServletConfig.class);
         when(config.getInitParameterNames()).thenReturn(Collections.enumeration(Arrays.asList(ServerProperties.PROVIDER_PACKAGES)));
-        when(config.getInitParameter(eq(ServerProperties.PROVIDER_PACKAGES))).thenReturn("no.priv.bang.handlelapp.web.api.resources");
+        when(config.getInitParameter(ServerProperties.PROVIDER_PACKAGES)).thenReturn("no.priv.bang.handlelapp.web.api.resources");
         ServletContext servletContext = mock(ServletContext.class);
         when(servletContext.getContextPath()).thenReturn("/handlelapp");
         when(config.getServletContext()).thenReturn(servletContext);

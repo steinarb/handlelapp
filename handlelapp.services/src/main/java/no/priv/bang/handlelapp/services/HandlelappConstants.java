@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Steinar Bang
+ * Copyright 2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 package no.priv.bang.handlelapp.services;
 
 public class HandlelappConstants {
-    public static final String SAMPLEAPP_JDBC_URL = "handlelapp.db.jdbc.url";
-    public static final String SAMPLEAPP_JDBC_USER = "handlelapp.db.jdbc.user";
-    public static final String SAMPLEAPP_JDBC_PASSWORD = "handlelapp.db.jdbc.password"; // NOSONAR hard to write code to handle passwords without saying the word "password"
+    public static final String HANDLELAPP_JDBC_URL = "handlelapp.db.jdbc.url";
+    public static final String HANDLELAPP_JDBC_USER = "handlelapp.db.jdbc.user";
+    public static final String HANDLELAPP_JDBC_PASSWORD = "handlelapp.db.jdbc.password"; // NOSONAR hard to write code to handle passwords without saying the word "password"
 
-    public static final String SAMPLEAPPUSER_ROLE = "handlelappuser";
+    public static final String HANDLELAPPUSER_ROLE = "handlelappuser";
 
     private HandlelappConstants() {}
 }

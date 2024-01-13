@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Steinar Bang
+ * Copyright 2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.osgi.service.log.LogService;
 
+import no.priv.bang.osgiservice.users.UserManagementService;
 import no.priv.bang.handlelapp.services.HandlelappService;
 import no.priv.bang.servlet.jersey.JerseyServlet;
 
@@ -47,6 +48,11 @@ public class HandlelappWebApi extends JerseyServlet {
     @Reference
     public void setHandlelappService(HandlelappService handlelapp) {
         addInjectedOsgiService(HandlelappService.class, handlelapp);
+    }
+
+    @Reference
+    public void setUseradmin(UserManagementService useradmin) {
+        addInjectedOsgiService(UserManagementService.class, useradmin);
     }
 
     @Activate

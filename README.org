@@ -3,7 +3,7 @@
 Dette er en webapp som brukes til å lage en handlelapp og å oppdaterer handlelappen realtime mens man handler.
 
 ** Utviklingsstatus
-[[https://travis-ci.org/steinarb/handlelapp][file:https://travis-ci.org/steinarb/handlelapp.svg?branch=master]]
+[[https://github.com/steinarb/handlelapp/actions/workflows/handlelapp-maven-ci-build.yml][file:https://github.com/steinarb/handlelapp/actions/workflows/handlelapp-maven-ci-build.yml/badge.svg]]
 
 ** Installasjon
 

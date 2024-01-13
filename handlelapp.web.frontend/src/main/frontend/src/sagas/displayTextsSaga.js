@@ -3,18 +3,18 @@ import axios from 'axios';
 import {
     DISPLAY_TEXTS_REQUEST,
     DISPLAY_TEXTS_RECEIVE,
-    DISPLAY_TEXTS_ERROR,
-    UPDATE_LOCALE,
-} from '../actiontypes';
+    DISPLAY_TEXTS_FAILURE,
+    SELECT_LOCALE,
+} from '../reduxactions';
 
 // watcher saga
 export default function* displayTextsSaga() {
     yield takeLatest(DISPLAY_TEXTS_REQUEST, receiveDisplayTextsSaga);
-    yield takeLatest(UPDATE_LOCALE, receiveDisplayTextsSaga);
+    yield takeLatest(SELECT_LOCALE, receiveDisplayTextsSaga);
 }
 
 function doDisplayTexts(locale) {
-    return axios.get('/handlelapp/api/displaytexts', { params: { locale } });
+    return axios.get('/api/displaytexts', { params: { locale } });
 }
 
 // worker saga
@@ -24,6 +24,6 @@ function* receiveDisplayTextsSaga(action) {
         const displayTexts = (response.headers['content-type'] == 'application/json') ? response.data : {};
         yield put(DISPLAY_TEXTS_RECEIVE(displayTexts));
     } catch (error) {
-        yield put(DISPLAY_TEXTS_ERROR(error));
+        yield put(DISPLAY_TEXTS_FAILURE(error));
     }
 }

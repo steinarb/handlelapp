@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Steinar Bang
+ * Copyright 2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,53 +22,49 @@ import javax.sql.DataSource;
 import org.ops4j.pax.jdbc.hook.PreHook;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.log.LogService;
-import org.osgi.service.log.Logger;
 
-import liquibase.Liquibase;
-import liquibase.database.DatabaseConnection;
-import liquibase.database.jvm.JdbcConnection;
+import liquibase.Scope;
+import liquibase.ThreadLocalScopeManager;
 import liquibase.exception.LiquibaseException;
-import liquibase.resource.ClassLoaderResourceAccessor;
 import no.priv.bang.handlelapp.db.liquibase.HandlelappLiquibase;
 
 @Component(immediate=true, property = "name=handlelappdb")
 public class HandlelappProductionDbLiquibaseRunner implements PreHook {
 
-    private Logger logger;
-
-    @Reference
-    public void setLogService(LogService logservice) {
-        this.logger = logservice.getLogger(HandlelappProductionDbLiquibaseRunner.class);
-    }
-
     @Activate
     public void activate() {
         // Called after all injections have been satisfied and before the PreHook service is exposed
+        Scope.setScopeManager(new ThreadLocalScopeManager());
     }
 
     @Override
     public void prepare(DataSource datasource) throws SQLException {
-        try (Connection connect = datasource.getConnection()) {
-            HandlelappLiquibase handlelappLiquibase = new HandlelappLiquibase();
+        var handlelappLiquibase = new HandlelappLiquibase();
+        try (var connect = datasource.getConnection()) {
             handlelappLiquibase.createInitialSchema(connect);
-            insertMockData(connect);
-            handlelappLiquibase.updateSchema(connect);
+        } catch (SQLException e) {
+            throw e;
         } catch (Exception e) {
-            logError("Failed to create handlelapp derby test database", e);
+            throw new SQLException("Failed to create schema in handlelapp PostgreSQL database", e);
+        }
+
+        try (var connect = datasource.getConnection()) {
+            insertInitialData(connect, handlelappLiquibase);
+        } catch (Exception e) {
+            throw new SQLException("Failed to insert initial data into handlelapp PostgreSQL database", e);
+        }
+
+        try (var connect = datasource.getConnection()) {
+            handlelappLiquibase.updateSchema(connect);
+        } catch (SQLException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SQLException("Failed to modify schema of handlelapp PostgreSQL database", e);
         }
     }
 
-    public void insertMockData(Connection connect) throws LiquibaseException {
-        DatabaseConnection databaseConnection = new JdbcConnection(connect);
-        ClassLoaderResourceAccessor classLoaderResourceAccessor = new ClassLoaderResourceAccessor(getClass().getClassLoader());
-        Liquibase liquibase = new Liquibase("sql/data/db-changelog.xml", classLoaderResourceAccessor, databaseConnection);
-        liquibase.update("");
-    }
-
-    private void logError(String message, Exception exception) {
-        logger.error(message, exception);
+    public void insertInitialData(Connection connect, HandlelappLiquibase handlelappLiquibase) throws LiquibaseException {
+        handlelappLiquibase.applyLiquibaseChangelist(connect, "sql/data/db-changelog.xml", getClass().getClassLoader());
     }
 
 }

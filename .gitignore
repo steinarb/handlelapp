@@ -7,3 +7,4 @@
 /handlelapp.db.liquibase/src/test/resources/olddata
 node_modules/
 target/
+/.metadata/

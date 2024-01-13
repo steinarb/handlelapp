@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Steinar Bang
+ * Copyright 2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class HandlelappTestdata {
     private UserManagementService useradmin;
 
     @Reference
-    public void setSampleappService(HandlelappService handlelapp) {
+    public void setHandlelappService(HandlelappService handlelapp) {
         // Brukes bare til å bestemme rekkefølge på kjøring
         // Når denne blir kalt vet vi at authservice har
         // rollen handlelappuser lagt til
@@ -51,7 +51,7 @@ public class HandlelappTestdata {
     }
 
     void addRolesForTestusers() {
-        Role handlelappuser = useradmin.getRoles().stream().filter(r -> SAMPLEAPPUSER_ROLE.equals(r.getRolename())).findFirst().get(); // NOSONAR testkode
+        Role handlelappuser = useradmin.getRoles().stream().filter(r -> HANDLELAPPUSER_ROLE.equals(r.getRolename())).findFirst().get(); // NOSONAR testkode
         User jad = useradmin.getUser("jad");
         useradmin.addUserRoles(UserRoles.with().user(jad).roles(Arrays.asList(handlelappuser)).build());
     }

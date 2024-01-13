@@ -3,23 +3,23 @@ import axios from 'axios';
 import {
     ACCOUNTS_REQUEST,
     ACCOUNTS_RECEIVE,
-    ACCOUNTS_ERROR,
-} from '../actiontypes';
+    ACCOUNTS_FAILURE,
+} from '../reduxactions';
 
 function sendAccounts() {
-    return axios.get('/handlelapp/api/accounts');
+    return axios.get('/api/accounts');
 }
 
-function* mottaAccountsResultat() {
+function* mottaAccountsResult() {
     try {
         const response = yield call(sendAccounts);
         const accountsresult = (response.headers['content-type'] === 'application/json') ? response.data : {};
         yield put(ACCOUNTS_RECEIVE(accountsresult));
     } catch (error) {
-        yield put(ACCOUNTS_ERROR(error));
+        yield put(ACCOUNTS_FAILURE(error));
     }
 }
 
 export default function* accountsSaga() {
-    yield takeLatest(ACCOUNTS_REQUEST, mottaAccountsResultat);
+    yield takeLatest(ACCOUNTS_REQUEST, mottaAccountsResult);
 }

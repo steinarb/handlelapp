@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Steinar Bang
+ * Copyright 2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,26 @@ package no.priv.bang.handlelapp.services;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+
+import no.priv.bang.handlelapp.services.beans.Account;
+import no.priv.bang.handlelapp.services.beans.CounterBean;
+import no.priv.bang.handlelapp.services.beans.CounterIncrementStepBean;
+import no.priv.bang.handlelapp.services.beans.LocaleBean;
 
 public interface HandlelappService {
 
     public List<Account> getAccounts();
+
+    public Optional<CounterIncrementStepBean> getCounterIncrementStep(String username);
+
+    public Optional<CounterIncrementStepBean> updateCounterIncrementStep(CounterIncrementStepBean cupdatedIncrementStep);
+
+    public Optional<CounterBean> getCounter(String username);
+
+    public Optional<CounterBean> incrementCounter(String username);
+
+    public Optional<CounterBean> decrementCounter(String username);
 
     Locale defaultLocale();
 
@@ -30,5 +46,7 @@ public interface HandlelappService {
     public Map<String, String> displayTexts(Locale locale);
 
     public String displayText(String key, String locale);
+
+    public boolean lazilyCreateAccount(String username);
 
 }
