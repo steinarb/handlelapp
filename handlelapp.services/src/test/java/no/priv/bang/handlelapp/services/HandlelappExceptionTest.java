@@ -25,22 +25,22 @@ class HandlelappExceptionTest {
 
     @Test
     void testCreate() {
-        String message1 = "just a message";
-        HandlelappException exception1 = new HandlelappException(message1);
+        var message1 = "just a message";
+        var exception1 = new HandlelappException(message1);
         assertEquals(message1, exception1.getMessage());
         assertNull(exception1.getCause());
 
-        String message2 = "message with cause";
-        Exception cause2 = new SQLException();
-        HandlelappException exception2 = new HandlelappException(message2, cause2);
+        var message2 = "message with cause";
+        var cause2 = new SQLException();
+        var exception2 = new HandlelappException(message2, cause2);
         assertEquals(message2, exception2.getMessage());
         assertEquals(cause2, exception2.getCause());
 
-        HandlelappException exception3 = new HandlelappException(message2, cause2, true, true);
+        var exception3 = new HandlelappException(message2, cause2, true, true);
         assertEquals(message2, exception3.getMessage());
         assertEquals(cause2, exception3.getCause());
 
-        HandlelappException exception4 = new HandlelappException(cause2);
+        var exception4 = new HandlelappException(cause2);
         assertEquals(cause2.getClass().getName(), exception4.getMessage());
         assertEquals(cause2, exception4.getCause());
     }

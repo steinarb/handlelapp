@@ -25,8 +25,8 @@ class AccountTest {
 
     @Test
     void testCreate() {
-        User user = User.with().build();
-        Account account = Account.with().accountId(1).user(user).build();
+        var user = User.with().build();
+        var account = Account.with().accountId(1).user(user).build();
         assertEquals(1, account.getAccountId());
         assertEquals(user, account.getUser());
     }

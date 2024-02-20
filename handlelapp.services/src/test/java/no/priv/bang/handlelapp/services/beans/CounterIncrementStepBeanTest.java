@@ -23,9 +23,9 @@ class CounterIncrementStepBeanTest {
 
     @Test
     void testCreate() {
-        String username = "jad";
-        int counterIncrementStep = 3;
-        CounterIncrementStepBean bean = CounterIncrementStepBean.with()
+        var username = "jad";
+        var counterIncrementStep = 3;
+        var bean = CounterIncrementStepBean.with()
             .username(username)
             .counterIncrementStep(counterIncrementStep)
             .build();

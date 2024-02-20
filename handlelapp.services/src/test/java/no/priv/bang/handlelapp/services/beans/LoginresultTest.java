@@ -26,13 +26,13 @@ class LoginresultTest {
 
     @Test
     void testCreate() {
-        boolean success = true;
-        boolean authorized = true;
-        String errormessage = "Feil passord";
-        String originalRequestUrl = "http://localhost:8181/handlelapp/hurtigregistrering";
-        String username = "jod";
-        User user = User.with().username(username).build();
-        Loginresult bean = Loginresult.with()
+        var success = true;
+        var authorized = true;
+        var errormessage = "Feil passord";
+        var originalRequestUrl = "http://localhost:8181/handlelapp/hurtigregistrering";
+        var username = "jod";
+        var user = User.with().username(username).build();
+        var bean = Loginresult.with()
             .success(success)
             .errormessage(errormessage)
             .authorized(authorized)
@@ -48,7 +48,7 @@ class LoginresultTest {
 
     @Test
     void testNoargsConstructor() {
-        Loginresult bean = Loginresult.with().build();
+        var bean = Loginresult.with().build();
         assertFalse(bean.getSuccess());
         assertNull(bean.getErrormessage());
         assertFalse(bean.isAuthorized());
@@ -57,7 +57,7 @@ class LoginresultTest {
 
     @Test
     void testToString() {
-        Loginresult bean = Loginresult.with().build();
+        var bean = Loginresult.with().build();
         assertThat(bean.toString()).startsWith("Loginresult [");
     }
 

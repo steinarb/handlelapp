@@ -36,9 +36,9 @@ class HandlelappTestdataTest {
 
     @Test
     void testActivate() {
-        HandlelappTestdata testdata = new HandlelappTestdata();
+        var testdata = new HandlelappTestdata();
 
-        UserManagementService useradmin = mock(MockUserManagementService.class, CALLS_REAL_METHODS);
+        var useradmin = mock(MockUserManagementService.class, CALLS_REAL_METHODS);
         when(useradmin.getUser("jod")).thenReturn(User.with().userid(1).username("jod").email("jd@gmail.com").firstname("John").lastname("Doe").build());
         when(useradmin.getUser("jad")).thenReturn(User.with().userid(1).username("jad").email("jad@gmail.com").firstname("Jane").lastname("Doe").build());
         when(useradmin.getRoles()).thenReturn(Arrays.asList(Role.with().build(), Role.with().build(), Role.with().id(2).rolename(HANDLELAPPUSER_ROLE).build()));

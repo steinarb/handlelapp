@@ -25,22 +25,22 @@ class LocaleBeanTest {
 
     @Test
     void testUK() {
-        LocaleBean bean = LocaleBean.with().locale(Locale.UK).build();
+        var bean = LocaleBean.with().locale(Locale.UK).build();
         assertEquals("en_GB", bean.getCode());
         assertEquals("English", bean.getDisplayLanguage());
     }
 
     @Test
     void testNO() {
-        Locale norsk = Locale.forLanguageTag("nb-NO");
-        LocaleBean bean = LocaleBean.with().locale(norsk).build();
+        var norsk = Locale.forLanguageTag("nb-NO");
+        var bean = LocaleBean.with().locale(norsk).build();
         assertEquals("nb_NO", bean.getCode());
         assertEquals(norsk.getDisplayLanguage(norsk), bean.getDisplayLanguage());
     }
 
     @Test
     void testNoArgsConstructor() {
-        LocaleBean bean = LocaleBean.with().build();
+        var bean = LocaleBean.with().build();
         assertNull(bean.getCode());
         assertNull(bean.getDisplayLanguage());
     }

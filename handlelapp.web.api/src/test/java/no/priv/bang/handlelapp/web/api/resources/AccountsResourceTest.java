@@ -20,8 +20,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Collections;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 import no.priv.bang.handlelapp.services.HandlelappService;
@@ -31,12 +29,12 @@ class AccountsResourceTest {
 
     @Test
     void testGetAccounts() {
-        AccountsResource resource = new AccountsResource();
-        HandlelappService handlelapp = mock(HandlelappService.class);
-        Account account = Account.with().accountId(123).build();
+        var resource = new AccountsResource();
+        var handlelapp = mock(HandlelappService.class);
+        var account = Account.with().accountId(123).build();
         when(handlelapp.getAccounts()).thenReturn(Collections.singletonList(account));
         resource.handlelapp = handlelapp;
-        List<Account> accounts = resource.getAccounts();
+        var accounts = resource.getAccounts();
         assertNotNull(accounts);
         assertThat(accounts).isNotEmpty();
     }

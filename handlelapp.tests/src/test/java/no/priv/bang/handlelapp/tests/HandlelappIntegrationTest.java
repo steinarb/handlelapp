@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
-import org.ops4j.pax.exam.options.MavenArtifactUrlReference;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import static org.ops4j.pax.exam.CoreOptions.*;
@@ -35,13 +34,13 @@ public class HandlelappIntegrationTest extends KarafTestSupport {
 
     @Configuration
     public Option[] config() {
-        final MavenArtifactUrlReference handlelappFeatureRepo = maven()
+        final var handlelappFeatureRepo = maven()
             .groupId("no.priv.bang.handlelapp")
             .artifactId("karaf")
             .versionAsInProject()
             .type("xml")
             .classifier("features");
-        Option[] options = new Option[] {
+        var options = new Option[] {
             features(handlelappFeatureRepo)
         };
         return Stream.of(super.config(), options).flatMap(Stream::of).toArray(Option[]::new);

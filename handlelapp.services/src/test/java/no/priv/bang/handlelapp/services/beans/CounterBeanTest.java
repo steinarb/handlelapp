@@ -23,10 +23,10 @@ class CounterBeanTest {
 
     @Test
     void testCreate() {
-        int counter = 42;
-        CounterBean bean = CounterBean.with()
-                .counter(counter)
-                .build();
+        var counter = 42;
+        var bean = CounterBean.with()
+            .counter(counter)
+            .build();
         assertNotNull(bean);
         assertEquals(counter, bean.getCounter());
     }
