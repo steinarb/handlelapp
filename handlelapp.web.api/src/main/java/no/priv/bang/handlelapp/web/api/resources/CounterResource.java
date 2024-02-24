@@ -26,12 +26,17 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.authz.annotation.RequiresUser;
+
 import no.priv.bang.handlelapp.services.HandlelappService;
 import no.priv.bang.handlelapp.services.beans.CounterBean;
 import no.priv.bang.handlelapp.services.beans.CounterIncrementStepBean;
 
 @Path("counter")
 @Produces(MediaType.APPLICATION_JSON)
+@RequiresUser
+@RequiresRoles("handlelappuser")
 public class CounterResource {
 
     @Inject
