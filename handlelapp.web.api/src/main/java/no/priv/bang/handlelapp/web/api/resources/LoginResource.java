@@ -17,6 +17,8 @@ package no.priv.bang.handlelapp.web.api.resources;
 
 import static no.priv.bang.handlelapp.services.HandlelappConstants.*;
 
+import java.util.Base64;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -74,8 +76,9 @@ public class LoginResource {
     public Loginresult login(@QueryParam("locale")String locale, Credentials credentials) {
         Subject subject = SecurityUtils.getSubject();
         String username = credentials.getUsername();
+        var decodedPassword = new String(Base64.getDecoder().decode(credentials.getPassword()));
 
-        UsernamePasswordToken token = new UsernamePasswordToken(username, credentials.getPassword().toCharArray(), true);
+        var token = new UsernamePasswordToken(username, decodedPassword, true);
         try {
             subject.login(token);
             String originalRequestUrl = findOriginalRequestUrl();
