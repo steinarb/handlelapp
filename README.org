@@ -12,6 +12,8 @@ Kjør følgende i karaf console:
   feature:repo-add mvn:no.priv.bang.handlelapp/karaf/LATEST/xml/features
   feature:install handlelapp-with-derby
 #+END_EXAMPLE
+
+Kan åpnes fra http://localhost:8181/handlelapp
 ** Lisens
 
 Denne software'n er lisensiert under Apache License v2.  Se fila LICENSE for detaljer
