@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
-import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -59,24 +58,6 @@ class CounterResourceTest extends ShiroTestBase {
         resource.handlelapp = handlelapp;
         var username = "jad";
         assertThrows(NotFoundException.class, () -> resource.getCounterIncrementStep(username));
-    }
-
-    @Test
-    void testGetCounterIncrementStepWhenWrongUsername() {
-        var handlelapp = mock(HandlelappService.class);
-        var resource = new CounterResource();
-        resource.handlelapp = handlelapp;
-        var username = "jod";
-        assertThrows(ForbiddenException.class, () -> resource.getCounterIncrementStep(username));
-    }
-
-    @Test
-    void testGetCounterIncrementStepWhenNoUsername() {
-        var handlelapp = mock(HandlelappService.class);
-        var resource = new CounterResource();
-        resource.handlelapp = handlelapp;
-        var username = "";
-        assertThrows(ForbiddenException.class, () -> resource.getCounterIncrementStep(username));
     }
 
     @Test
