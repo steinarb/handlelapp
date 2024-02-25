@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockServletContext;
 
 import no.priv.bang.handlelapp.services.HandlelappService;
 import no.priv.bang.handlelapp.services.beans.Credentials;
@@ -44,20 +45,23 @@ class LoginResourceTest extends ShiroTestBase {
         var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var useradmin = mock(UserManagementService.class);
+        var webcontext = new MockServletContext();
+        webcontext.setContextPath("/handlelapp");
         var resource = new LoginResource();
+        resource.webcontext = webcontext;
         resource.setLogservice(logservice);
         resource.request = request;
         resource.handlelapp = handlelapp;
         resource.useradmin = useradmin;
-        var username = "jd";
-        var password = Base64.getEncoder().encodeToString("johnnyBoi".getBytes());
+        var username = "jad";
+        var password = Base64.getEncoder().encodeToString("1ad".getBytes());
         createSubjectAndBindItToThread();
         var credentials = Credentials.with().username(username).password(password).build();
         var locale = "nb_NO";
         var result = resource.login(locale, credentials);
         assertTrue(result.getSuccess());
         assertTrue(result.isAuthorized());
-        assertNull(result.getOriginalRequestUrl());
+        assertEquals("/", result.getOriginalRequestUrl());
     }
 
     @Test
@@ -66,13 +70,16 @@ class LoginResourceTest extends ShiroTestBase {
         var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var useradmin = mock(UserManagementService.class);
+        var webcontext = new MockServletContext();
+        webcontext.setContextPath("/handlelapp");
         var resource = new LoginResource();
+        resource.webcontext = webcontext;
         resource.setLogservice(logservice);
         resource.request = request;
         resource.handlelapp = handlelapp;
         resource.useradmin = useradmin;
-        var username = "jad";
-        var password = Base64.getEncoder().encodeToString("1ad".getBytes());
+        var username = "jd";
+        var password = Base64.getEncoder().encodeToString("johnnyBoi".getBytes());
         createSubjectAndBindItToThread();
         var credentials = Credentials.with().username(username).password(password).build();
         var locale = "nb_NO";
@@ -88,13 +95,16 @@ class LoginResourceTest extends ShiroTestBase {
         var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var useradmin = mock(UserManagementService.class);
+        var webcontext = new MockServletContext();
+        webcontext.setContextPath("/handlelapp");
         var resource = new LoginResource();
+        resource.webcontext = webcontext;
         resource.setLogservice(logservice);
         resource.request = request;
         resource.handlelapp = handlelapp;
         resource.useradmin = useradmin;
-        var username = "jd";
-        var password = Base64.getEncoder().encodeToString("johnnyBoi".getBytes());
+        var username = "jad";
+        var password = Base64.getEncoder().encodeToString("1ad".getBytes());
         var originalRequest = new MockHttpServletRequest();
         originalRequest.setRequestURI("/handlelapp/");
         createSubjectFromOriginalRequestAndBindItToThread(originalRequest);
@@ -186,8 +196,8 @@ class LoginResourceTest extends ShiroTestBase {
         resource.setLogservice(logservice);
         resource.handlelapp = handlelapp;
         resource.useradmin = useradmin;
-        var username = "jd";
-        var password = "johnnyBoi";
+        var username = "jad";
+        var password = "1ad";
         var subject = createSubjectAndBindItToThread();
         var token = new UsernamePasswordToken(username, password.toCharArray(), true);
         subject.login(token);
@@ -209,8 +219,8 @@ class LoginResourceTest extends ShiroTestBase {
         resource.setLogservice(logservice);
         resource.handlelapp = handlelapp;
         resource.useradmin = useradmin;
-        var username = "jad";
-        var password = "1ad";
+        var username = "jd";
+        var password = "johnnyBoi";
         var subject = createSubjectAndBindItToThread();
         var token = new UsernamePasswordToken(username, password.toCharArray(), true);
         subject.login(token);
