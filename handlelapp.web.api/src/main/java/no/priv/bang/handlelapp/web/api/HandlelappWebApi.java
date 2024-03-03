@@ -18,11 +18,6 @@ package no.priv.bang.handlelapp.web.api;
 import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.*;
 
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-
-import org.apache.shiro.web.jaxrs.ShiroFeature;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.servlet.WebConfig;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -42,14 +37,6 @@ import no.priv.bang.servlet.jersey.JerseyServlet;
 @HttpWhiteboardServletPattern("/api/*")
 public class HandlelappWebApi extends JerseyServlet {
     private static final long serialVersionUID = 3391345571152153990L; // NOSONAR
-
-    @Override
-    protected void init(WebConfig webConfig) throws ServletException {
-        super.init(webConfig);
-        var copyOfExistingConfig = new ResourceConfig(getConfiguration());
-        copyOfExistingConfig.register(ShiroFeature.class);
-        reload(copyOfExistingConfig);
-    }
 
     @Override
     @Reference
