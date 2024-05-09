@@ -15,6 +15,10 @@
  */
 package no.priv.bang.handlelapp.db.liquibase;
 
+import static liquibase.command.core.UpdateCommandStep.CHANGELOG_FILE_ARG;
+import static liquibase.command.core.helpers.DatabaseChangelogCommandStep.CHANGELOG_PARAMETERS;
+import static liquibase.command.core.helpers.DbUrlConnectionArgumentsCommandStep.DATABASE_ARG;
+
 import java.sql.Connection;
 import java.util.Map;
 
@@ -22,9 +26,6 @@ import liquibase.Scope;
 import liquibase.Scope.ScopedRunner;
 import liquibase.changelog.ChangeLogParameters;
 import liquibase.command.CommandScope;
-import liquibase.command.core.UpdateCommandStep;
-import liquibase.command.core.helpers.DatabaseChangelogCommandStep;
-import liquibase.command.core.helpers.DbUrlConnectionArgumentsCommandStep;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
@@ -47,9 +48,9 @@ public class HandlelappLiquibase {
                 Scope.Attr.resourceAccessor.name(), new ClassLoaderResourceAccessor(classLoader));
 
             Scope.child(scopeObjects, (ScopedRunner<?>) () -> new CommandScope("update")
-                        .addArgumentValue(DbUrlConnectionArgumentsCommandStep.DATABASE_ARG, database)
-                        .addArgumentValue(UpdateCommandStep.CHANGELOG_FILE_ARG, changelistClasspathResource)
-                        .addArgumentValue(DatabaseChangelogCommandStep.CHANGELOG_PARAMETERS, new ChangeLogParameters(database))
+                        .addArgumentValue(DATABASE_ARG, database)
+                        .addArgumentValue(CHANGELOG_FILE_ARG, changelistClasspathResource)
+                        .addArgumentValue(CHANGELOG_PARAMETERS, new ChangeLogParameters(database))
                         .execute());
         } catch (LiquibaseException e) {
             throw e;
