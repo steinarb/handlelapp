@@ -155,10 +155,10 @@ public class HandlelappServiceProvider implements HandlelappService {
 
     @Override
     public Optional<CounterIncrementStepBean> updateCounterIncrementStep(CounterIncrementStepBean updatedIncrementStep) {
-        String username = updatedIncrementStep.getUsername();
+        String username = updatedIncrementStep.username();
         try(Connection connection = datasource.getConnection()) {
             try(PreparedStatement statement = connection.prepareStatement("update counter_increment_steps set counter_increment_step=? where account_id in (select account_id from handlelapp_accounts where username=?)")) {
-                statement.setInt(1, updatedIncrementStep.getCounterIncrementStep());
+                statement.setInt(1, updatedIncrementStep.counterIncrementStep());
                 statement.setString(2, username);
                 statement.executeUpdate();
             }

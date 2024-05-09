@@ -17,85 +17,46 @@ package no.priv.bang.handlelapp.services.beans;
 
 import no.priv.bang.osgiservice.users.User;
 
-public class Loginresult {
+public record Loginresult(boolean success, String errormessage, boolean authorized, User user, String originalRequestUrl) {
 
-    private boolean success;
-    private String errormessage;
-    private boolean authorized;
-    private User user;
-    private String originalRequestUrl;
-
-    private Loginresult() {}
-
-    public boolean getSuccess() {
-        return success;
+    public static Builder with() {
+        return new Builder();
     }
 
-    public String getErrormessage() {
-        return errormessage;
-    }
-
-    public boolean isAuthorized() {
-        return authorized;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public String getOriginalRequestUrl() {
-        return originalRequestUrl;
-    }
-
-    @Override
-    public String toString() {
-        return "Loginresult [success=" + success + ", errormessage=" + errormessage + ", authorized=" + authorized + "originalRequestUrl=" + originalRequestUrl + "]";
-    }
-
-    public static LoginresultBuilder with() {
-        return new LoginresultBuilder();
-    }
-
-    public static class LoginresultBuilder {
+    public static class Builder {
         private boolean success;
         private String errormessage;
         private boolean authorized;
         private User user;
         private String originalRequestUrl;
 
-        private LoginresultBuilder() {}
+        private Builder() {}
 
         public Loginresult build() {
-            Loginresult loginresult = new Loginresult();
-            loginresult.success = this.success;
-            loginresult.errormessage = this.errormessage;
-            loginresult.authorized = authorized;
-            loginresult.user = user;
-            loginresult.originalRequestUrl = originalRequestUrl;
-            return loginresult;
+            return new Loginresult(this.success, this.errormessage, authorized, user, originalRequestUrl);
         }
 
-        public LoginresultBuilder success(boolean success) {
+        public Builder success(boolean success) {
             this.success = success;
             return this;
         }
 
-        public LoginresultBuilder errormessage(String errormessage) {
+        public Builder errormessage(String errormessage) {
             this.errormessage = errormessage;
             return this;
         }
 
-        public LoginresultBuilder authorized(boolean authorized) {
+        public Builder authorized(boolean authorized) {
             this.authorized = authorized;
             return this;
         }
 
-        public LoginresultBuilder user(User user) {
+        public Builder user(User user) {
             this.user = user;
             return this;
         }
 
-        public LoginresultBuilder originalRequestUrl(String originalRequestUrl) {
+        public Builder originalRequestUrl(String originalRequestUrl) {
             this.originalRequestUrl = originalRequestUrl;
             return this;
         }

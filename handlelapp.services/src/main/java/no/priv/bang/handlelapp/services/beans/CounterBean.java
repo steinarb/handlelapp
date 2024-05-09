@@ -15,33 +15,22 @@
  */
 package no.priv.bang.handlelapp.services.beans;
 
-import no.priv.bang.beans.immutable.Immutable;
+public record CounterBean(Integer counter) {
 
-public class CounterBean extends Immutable {
-    private Integer counter;
-
-    private CounterBean() {}
-
-    public static CounterBeanBuilder with() {
-        return new CounterBeanBuilder();
+    public static Builder with() {
+        return new Builder();
     }
 
-    public Integer getCounter() {
-        return counter;
-    }
-
-    public static class CounterBeanBuilder {
+    public static class Builder {
         private int counter;
 
-        private CounterBeanBuilder() {}
+        private Builder() {}
 
         public CounterBean build() {
-            CounterBean counterBean = new CounterBean();
-            counterBean.counter = counter;
-            return counterBean;
+            return new CounterBean(counter);
         }
 
-        public CounterBeanBuilder counter(int counter) {
+        public Builder counter(int counter) {
             this.counter = counter;
             return this;
         }

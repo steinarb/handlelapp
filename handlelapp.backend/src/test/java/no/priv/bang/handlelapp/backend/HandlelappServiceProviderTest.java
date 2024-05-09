@@ -76,11 +76,11 @@ class HandlelappServiceProviderTest {
         var defaultInitialCounterIncrementStepValue = 1;
         var counterIncrementStep = provider.getCounterIncrementStep("jad");
         assertThat(counterIncrementStep).isNotEmpty();
-        assertEquals(defaultInitialCounterIncrementStepValue, counterIncrementStep.get().getCounterIncrementStep());
+        assertEquals(defaultInitialCounterIncrementStepValue, counterIncrementStep.get().counterIncrementStep());
         var defaultInitialCounterValue = 0;
         var counter = provider.getCounter("jad");
         assertThat(counter).isNotEmpty();
-        assertEquals(defaultInitialCounterValue, counter.get().getCounter());
+        assertEquals(defaultInitialCounterValue, counter.get().counter());
         var secondAccountCreate = provider.lazilyCreateAccount("jad");
         assertFalse(secondAccountCreate);
         var accountsAfterSecondCreate = provider.getAccounts();
@@ -168,15 +168,15 @@ class HandlelappServiceProviderTest {
         // Set the increment step to the existing step value plus one
         var newIncrementStep = CounterIncrementStepBean.with()
             .username("on")
-            .counterIncrementStep(initialCounterIncrementStep.getCounterIncrementStep() + 1)
+            .counterIncrementStep(initialCounterIncrementStep.counterIncrementStep() + 1)
             .build();
         var updatedIncrementStep = provider.updateCounterIncrementStep(newIncrementStep).orElseThrow();
-        assertThat(updatedIncrementStep.getCounterIncrementStep()).isGreaterThan(initialCounterIncrementStep.getCounterIncrementStep());
+        assertThat(updatedIncrementStep.counterIncrementStep()).isGreaterThan(initialCounterIncrementStep.counterIncrementStep());
 
         // Increment and verify the expected result
-        var expectedIncrementedValue = initialCounterValue.getCounter() + updatedIncrementStep.getCounterIncrementStep();
+        var expectedIncrementedValue = initialCounterValue.counter() + updatedIncrementStep.counterIncrementStep();
         var incrementedValue = provider.incrementCounter("on").orElseThrow();
-        assertEquals(expectedIncrementedValue, incrementedValue.getCounter());
+        assertEquals(expectedIncrementedValue, incrementedValue.counter());
 
         // Decrement and verify the expected result
         var decrementedValue = provider.decrementCounter("on").orElseThrow();

@@ -15,40 +15,27 @@
  */
 package no.priv.bang.handlelapp.services.beans;
 
-import no.priv.bang.beans.immutable.Immutable;
 import no.priv.bang.osgiservice.users.User;
 
-public class Account extends Immutable {
-    int accountId;
-    User user;
+public record Account(int accountId, User user) {
 
-    public int getAccountId() {
-        return accountId;
-    }
-    public User getUser() {
-        return user;
+    public static Builder with() {
+        return new Builder();
     }
 
-    public static AccountBuilder with() {
-        return new AccountBuilder();
-    }
-
-    public static class AccountBuilder {
+    public static class Builder {
         int accountId;
         User user;
 
         public Account build() {
-            Account account = new Account();
-            account.accountId = this.accountId;
-            account.user = this.user;
-            return account;
+            return new Account(this.accountId, this.user);
         }
 
-        public AccountBuilder accountId(int accountId) {
+        public Builder accountId(int accountId) {
             this.accountId = accountId;
             return this;
         }
-        public AccountBuilder user(User user) {
+        public Builder user(User user) {
             this.user = user;
             return this;
         }
@@ -56,3 +43,4 @@ public class Account extends Immutable {
     }
 
 }
+

@@ -15,49 +15,28 @@
  */
 package no.priv.bang.handlelapp.services.beans;
 
-public class Credentials {
+public record Credentials(String username, String password) {
 
-    private String username;
-    private String password;
-
-    private Credentials() {}
-
-    public String getUsername() {
-        return username;
+    public static Builder with() {
+        return new Builder();
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String toString() {
-        return "Credentials [username=" + username + ", password=" + password + "]";
-    }
-
-    public static CredentialsBuilder with() {
-        return new CredentialsBuilder();
-    }
-
-    public static class CredentialsBuilder {
+    public static class Builder {
         private String username;
         private String password;
 
-        private CredentialsBuilder() {}
+        private Builder() {}
 
         public Credentials build() {
-            Credentials credentials = new Credentials();
-            credentials.username = this.username;
-            credentials.password = this.password;
-            return credentials;
+            return new Credentials(this.username, this.password);
         }
 
-        public CredentialsBuilder username(String username) {
+        public Builder username(String username) {
             this.username = username;
             return this;
         }
 
-        public CredentialsBuilder password(String password) {
+        public Builder password(String password) {
             this.password = password;
             return this;
         }

@@ -15,7 +15,6 @@
  */
 package no.priv.bang.handlelapp.services.beans;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
@@ -39,26 +38,20 @@ class LoginresultTest {
             .user(user)
             .originalRequestUrl(originalRequestUrl)
             .build();
-        assertTrue(bean.getSuccess());
-        assertEquals(errormessage, bean.getErrormessage());
-        assertTrue(bean.isAuthorized());
-        assertEquals(username, bean.getUser().getUsername());
-        assertEquals(originalRequestUrl, bean.getOriginalRequestUrl());
+        assertTrue(bean.success());
+        assertEquals(errormessage, bean.errormessage());
+        assertTrue(bean.authorized());
+        assertEquals(username, bean.user().getUsername());
+        assertEquals(originalRequestUrl, bean.originalRequestUrl());
     }
 
     @Test
     void testNoargsConstructor() {
         var bean = Loginresult.with().build();
-        assertFalse(bean.getSuccess());
-        assertNull(bean.getErrormessage());
-        assertFalse(bean.isAuthorized());
-        assertNull(bean.getOriginalRequestUrl());
-    }
-
-    @Test
-    void testToString() {
-        var bean = Loginresult.with().build();
-        assertThat(bean.toString()).startsWith("Loginresult [");
+        assertFalse(bean.success());
+        assertNull(bean.errormessage());
+        assertFalse(bean.authorized());
+        assertNull(bean.originalRequestUrl());
     }
 
 }

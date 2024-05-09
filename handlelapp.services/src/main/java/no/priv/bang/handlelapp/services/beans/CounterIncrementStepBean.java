@@ -15,45 +15,28 @@
  */
 package no.priv.bang.handlelapp.services.beans;
 
-import no.priv.bang.beans.immutable.Immutable;
+public record CounterIncrementStepBean(String username, Integer counterIncrementStep) {
 
-public class CounterIncrementStepBean extends Immutable {
-    private String username;
-    private Integer counterIncrementStep;
-
-    private CounterIncrementStepBean() {}
-
-    public static CounterIncrementStepBeanBuilder with() {
-        return new CounterIncrementStepBeanBuilder();
+    public static Builder with() {
+        return new Builder();
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public Integer getCounterIncrementStep() {
-        return counterIncrementStep;
-    }
-
-    public static class CounterIncrementStepBeanBuilder {
+    public static class Builder {
         private String username;
         private int counterIncrementStep;
 
-        private CounterIncrementStepBeanBuilder() {}
+        private Builder() {}
 
         public CounterIncrementStepBean build() {
-            CounterIncrementStepBean counterIncrementStepBean = new CounterIncrementStepBean();
-            counterIncrementStepBean.username = this.username;
-            counterIncrementStepBean.counterIncrementStep = this.counterIncrementStep;
-            return counterIncrementStepBean;
+            return new CounterIncrementStepBean(this.username, this.counterIncrementStep);
         }
 
-        public CounterIncrementStepBeanBuilder username(String username) {
+        public Builder username(String username) {
             this.username = username;
             return this;
         }
 
-        public CounterIncrementStepBeanBuilder counterIncrementStep(int counterIncrementStep) {
+        public Builder counterIncrementStep(int counterIncrementStep) {
             this.counterIncrementStep = counterIncrementStep;
             return this;
         }

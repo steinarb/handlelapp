@@ -80,8 +80,8 @@ public class LoginResource {
     @Path("/login")
     public Loginresult login(@QueryParam("locale")String locale, Credentials credentials) {
         Subject subject = SecurityUtils.getSubject();
-        String username = credentials.getUsername();
-        var decodedPassword = new String(Base64.getDecoder().decode(credentials.getPassword()));
+        String username = credentials.username();
+        var decodedPassword = new String(Base64.getDecoder().decode(credentials.password()));
 
         var token = new UsernamePasswordToken(username, decodedPassword, true);
         try {

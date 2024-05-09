@@ -15,7 +15,6 @@
  */
 package no.priv.bang.handlelapp.services.beans;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
@@ -27,21 +26,15 @@ class CredentialsTest {
         var username = "jd";
         var password = "johnniboi";
         var bean = Credentials.with().username(username).password(password).build();
-        assertEquals(username, bean.getUsername());
-        assertEquals(password, bean.getPassword());
+        assertEquals(username, bean.username());
+        assertEquals(password, bean.password());
     }
 
     @Test
     void testNoArgsConstructor() {
         var bean = Credentials.with().build();
-        assertNull(bean.getUsername());
-        assertNull(bean.getPassword());
-    }
-
-    @Test
-    void testToString() {
-        var bean = Credentials.with().build();
-        assertThat(bean.toString()).startsWith("Credentials [");
+        assertNull(bean.username());
+        assertNull(bean.password());
     }
 
 }

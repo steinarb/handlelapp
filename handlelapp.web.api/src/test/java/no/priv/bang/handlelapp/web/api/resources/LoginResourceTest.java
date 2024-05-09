@@ -59,9 +59,9 @@ class LoginResourceTest extends ShiroTestBase {
         var credentials = Credentials.with().username(username).password(password).build();
         var locale = "nb_NO";
         var result = resource.login(locale, credentials);
-        assertTrue(result.getSuccess());
-        assertTrue(result.isAuthorized());
-        assertEquals("/", result.getOriginalRequestUrl());
+        assertTrue(result.success());
+        assertTrue(result.authorized());
+        assertEquals("/", result.originalRequestUrl());
     }
 
     @Test
@@ -84,8 +84,8 @@ class LoginResourceTest extends ShiroTestBase {
         var credentials = Credentials.with().username(username).password(password).build();
         var locale = "nb_NO";
         var result = resource.login(locale, credentials);
-        assertTrue(result.getSuccess());
-        assertFalse(result.isAuthorized());
+        assertTrue(result.success());
+        assertFalse(result.authorized());
     }
 
     @Test
@@ -112,9 +112,9 @@ class LoginResourceTest extends ShiroTestBase {
         var credentials = Credentials.with().username(username).password(password).build();
         var locale = "nb_NO";
         var result = resource.login(locale, credentials);
-        assertTrue(result.getSuccess());
-        assertTrue(result.isAuthorized());
-        assertEquals("/", result.getOriginalRequestUrl());
+        assertTrue(result.success());
+        assertTrue(result.authorized());
+        assertEquals("/", result.originalRequestUrl());
     }
 
     @Test
@@ -131,8 +131,8 @@ class LoginResourceTest extends ShiroTestBase {
         var credentials = Credentials.with().username(username).password(password).build();
         var locale = "nb_NO";
         var result = resource.login(locale, credentials);
-        assertFalse(result.getSuccess());
-        assertThat(result.getErrormessage()).startsWith("Feil passord");
+        assertFalse(result.success());
+        assertThat(result.errormessage()).startsWith("Feil passord");
     }
 
     @Test
@@ -149,7 +149,7 @@ class LoginResourceTest extends ShiroTestBase {
         var credentials = Credentials.with().username(username).password(password).build();
         var locale = "nb_NO";
         var result = resource.login(locale, credentials);
-        assertThat(result.getErrormessage()).startsWith("Ukjent konto");
+        assertThat(result.errormessage()).startsWith("Ukjent konto");
     }
 
     @Test
@@ -179,9 +179,9 @@ class LoginResourceTest extends ShiroTestBase {
         assertTrue(subject.isAuthenticated()); // Verify precondition user logged in
 
         var loginresult = resource.logout(locale);
-        assertFalse(loginresult.getSuccess());
-        assertEquals("Logget ut", loginresult.getErrormessage());
-        assertFalse(loginresult.isAuthorized());
+        assertFalse(loginresult.success());
+        assertEquals("Logget ut", loginresult.errormessage());
+        assertFalse(loginresult.authorized());
         assertFalse(subject.isAuthenticated()); // Verify user has been logged out
     }
 
@@ -203,9 +203,9 @@ class LoginResourceTest extends ShiroTestBase {
         subject.login(token);
 
         var loginresult = resource.loginstate(locale);
-        assertTrue(loginresult.getSuccess());
-        assertEquals("Bruker er logget inn og har tilgang", loginresult.getErrormessage());
-        assertTrue(loginresult.isAuthorized());
+        assertTrue(loginresult.success());
+        assertEquals("Bruker er logget inn og har tilgang", loginresult.errormessage());
+        assertTrue(loginresult.authorized());
     }
 
     @Test
@@ -226,9 +226,9 @@ class LoginResourceTest extends ShiroTestBase {
         subject.login(token);
 
         var loginresult = resource.loginstate(locale);
-        assertTrue(loginresult.getSuccess());
-        assertEquals("Bruker er logget inn men mangler tilgang", loginresult.getErrormessage());
-        assertFalse(loginresult.isAuthorized());
+        assertTrue(loginresult.success());
+        assertEquals("Bruker er logget inn men mangler tilgang", loginresult.errormessage());
+        assertFalse(loginresult.authorized());
     }
 
     @Test
@@ -243,9 +243,9 @@ class LoginResourceTest extends ShiroTestBase {
         createSubjectAndBindItToThread();
 
         var loginresult = resource.loginstate(locale);
-        assertFalse(loginresult.getSuccess());
-        assertEquals("Bruker er ikke logget inn", loginresult.getErrormessage());
-        assertFalse(loginresult.isAuthorized());
+        assertFalse(loginresult.success());
+        assertEquals("Bruker er ikke logget inn", loginresult.errormessage());
+        assertFalse(loginresult.authorized());
     }
 
 }
