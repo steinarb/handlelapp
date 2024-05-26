@@ -31,11 +31,6 @@ under the License.
 
     <dependencies>
         <dependency>
-            <groupId>no.priv.bang.beans</groupId>
-            <artifactId>beans.immutable</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>no.priv.bang.osgiservice</groupId>
             <artifactId>osgiservice.users</artifactId>
             <scope>provided</scope>
