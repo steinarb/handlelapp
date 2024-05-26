@@ -23,8 +23,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import no.priv.bang.handlelapp.services.HandlelappService;
-import no.priv.bang.osgiservice.users.Role;
-import no.priv.bang.osgiservice.users.User;
 import no.priv.bang.osgiservice.users.UserManagementService;
 import no.priv.bang.osgiservice.users.UserRoles;
 
@@ -51,8 +49,8 @@ public class HandlelappTestdata {
     }
 
     void addRolesForTestusers() {
-        Role handlelappuser = useradmin.getRoles().stream().filter(r -> HANDLELAPPUSER_ROLE.equals(r.getRolename())).findFirst().get(); // NOSONAR testkode
-        User jad = useradmin.getUser("jad");
+        var handlelappuser = useradmin.getRoles().stream().filter(r -> HANDLELAPPUSER_ROLE.equals(r.getRolename())).findFirst().get(); // NOSONAR testkode
+        var jad = useradmin.getUser("jad");
         useradmin.addUserRoles(UserRoles.with().user(jad).roles(Arrays.asList(handlelappuser)).build());
     }
 
