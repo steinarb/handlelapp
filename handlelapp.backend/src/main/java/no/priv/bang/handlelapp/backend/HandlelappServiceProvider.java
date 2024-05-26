@@ -285,7 +285,7 @@ public class HandlelappServiceProvider implements HandlelappService {
 
     private void addRolesIfNotpresent() {
         var handlelapproles = Map.of(HANDLELAPPUSER_ROLE, "Bruker av applikasjonen handlelapp");
-        var existingroles = useradmin.getRoles().stream().map(Role::getRolename).collect(Collectors.toSet());
+        var existingroles = useradmin.getRoles().stream().map(Role::rolename).collect(Collectors.toSet());
         handlelapproles.entrySet().stream()
             .filter(r -> !existingroles.contains(r.getKey()))
             .forEach(r ->  useradmin.addRole(Role.with().id(-1).rolename(r.getKey()).description(r.getValue()).build()));

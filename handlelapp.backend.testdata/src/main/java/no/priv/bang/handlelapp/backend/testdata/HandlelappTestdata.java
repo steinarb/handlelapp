@@ -49,7 +49,7 @@ public class HandlelappTestdata {
     }
 
     void addRolesForTestusers() {
-        var handlelappuser = useradmin.getRoles().stream().filter(r -> HANDLELAPPUSER_ROLE.equals(r.getRolename())).findFirst().get(); // NOSONAR testkode
+        var handlelappuser = useradmin.getRoles().stream().filter(r -> HANDLELAPPUSER_ROLE.equals(r.rolename())).findFirst().get(); // NOSONAR testkode
         var jad = useradmin.getUser("jad");
         useradmin.addUserRoles(UserRoles.with().user(jad).roles(Arrays.asList(handlelappuser)).build());
     }

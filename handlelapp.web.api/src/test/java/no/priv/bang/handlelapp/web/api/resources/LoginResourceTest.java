@@ -159,7 +159,7 @@ class LoginResourceTest extends ShiroTestBase {
         var resource = new LoginResource();
         resource.useradmin = useradmin;
         var user = resource.findUserSafely("null");
-        assertNull(user.getUsername());
+        assertNull(user.username());
     }
 
     @Test
