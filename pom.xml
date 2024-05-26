@@ -19,7 +19,7 @@ under the License.
     <parent>
         <groupId>no.priv.bang.pom</groupId>
         <artifactId>bang-authservice-client-pom</artifactId>
-        <version>1.1.50</version>
+        <version>2.0.1</version>
     </parent>
     <groupId>no.priv.bang.handlelapp</groupId>
     <artifactId>handlelapp</artifactId>
@@ -210,7 +210,7 @@ under the License.
         </profile>
     </profiles>
 
-<modules>  <module>handlelapp.db.liquibase</module>
+    <modules>  <module>handlelapp.db.liquibase</module>
     <module>handlelapp.db.liquibase.test</module>
     <module>handlelapp.db.liquibase.production</module>
     <module>handlelapp.services</module>
@@ -222,4 +222,4 @@ under the License.
     <module>karaf</module>
     <module>handlelapp.tests</module>
     <module>jacoco-coverage-report</module>
-  </modules></project>
+</modules></project>
