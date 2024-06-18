@@ -15,8 +15,8 @@
  */
 package no.priv.bang.handlelapp.db.liquibase;
 
+import static liquibase.Scope.Attr.resourceAccessor;
 import static liquibase.command.core.UpdateCommandStep.CHANGELOG_FILE_ARG;
-import static liquibase.command.core.helpers.DatabaseChangelogCommandStep.CHANGELOG_PARAMETERS;
 import static liquibase.command.core.helpers.DbUrlConnectionArgumentsCommandStep.DATABASE_ARG;
 
 import java.sql.Connection;
@@ -24,10 +24,11 @@ import java.util.Map;
 
 import liquibase.Scope;
 import liquibase.Scope.ScopedRunner;
-import liquibase.changelog.ChangeLogParameters;
 import liquibase.command.CommandScope;
+import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.DatabaseException;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 
@@ -42,22 +43,25 @@ public class HandlelappLiquibase {
     }
 
     public void applyLiquibaseChangelist(Connection connection, String changelistClasspathResource, ClassLoader classLoader) throws LiquibaseException {
-        try (var database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection))) {
-            Map<String, Object> scopeObjects = Map.of(
-                Scope.Attr.database.name(), database,
-                Scope.Attr.resourceAccessor.name(), new ClassLoaderResourceAccessor(classLoader));
-
-            Scope.child(scopeObjects, (ScopedRunner<?>) () -> new CommandScope("update")
-                        .addArgumentValue(DATABASE_ARG, database)
-                        .addArgumentValue(CHANGELOG_FILE_ARG, changelistClasspathResource)
-                        .addArgumentValue(CHANGELOG_PARAMETERS, new ChangeLogParameters(database))
-                        .execute());
+        try (var database = findCorrectDatabaseImplementation(connection)) {
+            Scope.child(scopeObjectsWithClassPathResourceAccessor(classLoader), (ScopedRunner<?>) () -> new CommandScope("update")
+                .addArgumentValue(DATABASE_ARG, database)
+                .addArgumentValue(CHANGELOG_FILE_ARG, changelistClasspathResource)
+                .execute());
         } catch (LiquibaseException e) {
             throw e;
         } catch (Exception e) {
             // AutoClosable.close() may throw Exception
             throw new LiquibaseException(e);
         }
+    }
+
+    private Database findCorrectDatabaseImplementation(Connection connection) throws DatabaseException {
+        return DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
+    }
+
+    private Map<String, Object> scopeObjectsWithClassPathResourceAccessor(ClassLoader classLoader) {
+        return Map.of(resourceAccessor.name(), new ClassLoaderResourceAccessor(classLoader));
     }
 
     private void applyLiquibaseChangelist(Connection connection, String changelistClasspathResource) throws LiquibaseException {
