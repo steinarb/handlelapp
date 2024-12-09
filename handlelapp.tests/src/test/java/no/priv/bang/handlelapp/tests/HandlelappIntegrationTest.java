@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 public class HandlelappIntegrationTest extends KarafTestSupport {
 
     @Configuration
+    @Override
     public Option[] config() {
         final var handlelappFeatureRepo = maven()
             .groupId("no.priv.bang.handlelapp")
