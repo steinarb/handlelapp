@@ -37,12 +37,14 @@ under the License.
             **/HandlelappTestDbLiquibaseRunner.java,
             **/HandlelappProductionDbLiquibaseRunner.java,
         </sonar.cpd.exclusions>
-        <sonar.issue.ignore.multicriteria>e1,e2</sonar.issue.ignore.multicriteria>
+        <sonar.issue.ignore.multicriteria>e1,e2,e3</sonar.issue.ignore.multicriteria>
         <sonar.issue.ignore.multicriteria.e1.ruleKey>java:S2160</sonar.issue.ignore.multicriteria.e1.ruleKey>
         <sonar.issue.ignore.multicriteria.e1.resourceKey>**/sampleapp.services/**/*.java</sonar.issue.ignore.multicriteria.e1.resourceKey>
         <sonar.issue.ignore.multicriteria.e2.ruleKey>java:S5976</sonar.issue.ignore.multicriteria.e2.ruleKey>
         <sonar.issue.ignore.multicriteria.e2.resourceKey>**/HandlelappWebApiTest.java</sonar.issue.ignore.multicriteria.e2.resourceKey>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../jacoco-coverage-report/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.issue.ignore.multicriteria.e3.ruleKey>java:S6813</sonar.issue.ignore.multicriteria.e3.ruleKey>
+        <sonar.issue.ignore.multicriteria.e3.resourceKey>**/handlelapp.web.api/src/main/java/**/resources/*.java</sonar.issue.ignore.multicriteria.e3.resourceKey>
     </properties>
 
     <dependencyManagement>
