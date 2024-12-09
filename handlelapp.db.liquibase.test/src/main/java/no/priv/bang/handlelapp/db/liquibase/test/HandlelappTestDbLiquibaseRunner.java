@@ -22,8 +22,6 @@ import org.ops4j.pax.jdbc.hook.PreHook;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
-import liquibase.Scope;
-import liquibase.ThreadLocalScopeManager;
 import liquibase.exception.LiquibaseException;
 import no.priv.bang.handlelapp.db.liquibase.HandlelappLiquibase;
 
@@ -33,7 +31,6 @@ public class HandlelappTestDbLiquibaseRunner implements PreHook {
     @Activate
     public void activate() {
         // Called after all injections have been satisfied and before the PreHook service is exposed
-        Scope.setScopeManager(new ThreadLocalScopeManager());
     }
 
     @Override
