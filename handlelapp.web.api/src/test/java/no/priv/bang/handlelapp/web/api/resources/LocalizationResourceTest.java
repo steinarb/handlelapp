@@ -34,7 +34,7 @@ import no.priv.bang.handlelapp.services.HandlelappService;
 import no.priv.bang.handlelapp.services.beans.LocaleBean;
 
 class LocalizationResourceTest {
-    private final static Locale NB_NO = Locale.forLanguageTag("nb-no");
+    private static final Locale NB_NO = Locale.forLanguageTag("nb-no");
 
     @Test
     void testDefaultLocale() {
