@@ -89,7 +89,7 @@ public class LoginResource {
             var savedRequest = Optional.ofNullable(WebUtils.getSavedRequest(request));
             var contextpath = webcontext.getContextPath();
             var originalRequestUrl =  savedRequest
-                .map(req -> req.getRequestUrl())
+                .map(SavedRequest::getRequestUrl)
                 .map(url -> url.replace(contextpath, ""))
                 .orElse("/");
             boolean authorized = subject.hasRole(HANDLELAPPUSER_ROLE);
