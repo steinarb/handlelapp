@@ -1,23 +1,15 @@
 import { combineReducers } from 'redux';
-import loginresult from './loginresultReducer';
-import accounts from './accountsReducer';
+import { createReducer } from '@reduxjs/toolkit';
+import { api } from '../api';
 import counterIncrementStep from './counterIncrementStepReducer';
-import counter from './counterReducer';
+import username from './usernameReducer';
 import locale from './localeReducer';
-import availableLocales from './availableLocalesReducer';
-import displayTexts from './displayTextsReducer';
-import errors from './errorsReducer';
-import basename from './basenameReducer';
 
-export default (routerReducer) => combineReducers({
+export default (routerReducer, basename) => combineReducers({
     router: routerReducer,
-    loginresult,
-    accounts,
+    [api.reducerPath]: api.reducer,
     counterIncrementStep,
-    counter,
+    username,
     locale,
-    availableLocales,
-    displayTexts,
-    errors,
-    basename,
+    basename: createReducer(basename, (builder) => builder),
 });

@@ -1,26 +1,29 @@
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { LOGIN_REQUEST } from '../reduxactions';
+import { useSelector } from 'react-redux';
+import {
+    useGetDefaultlocaleQuery,
+    useGetLoginstateQuery,
+    usePostLoginMutation,
+    useGetDisplaytextsQuery,
+} from '../api';
 import LoginMessage from './LoginMessage';
 
 export default function Login() {
-    const basename = useSelector(state => state.basename);
-    const loginresult = useSelector(state => state.loginresult);
-    const text = useSelector(state => state.displayTexts);
-    const dispatch = useDispatch();
     const [ username, setUsername ] = useState('');
     const [ password, setPassword ] = useState('');
-
-    if (loginresult.success) {
-        const originalRequestUrl = findReloadUrl(basename, loginresult.originalRequestUrl);
-        location.href = originalRequestUrl;
-    }
+    const basename = useSelector(state => state.basename);
+    const { isSuccess: defaultLocaleIsSuccess } = useGetDefaultlocaleQuery();
+    const locale = useSelector(state => state.locale);
+    const { data: loginresult = {} } = useGetLoginstateQuery(locale, { skip: !defaultLocaleIsSuccess });
+    const { data: text = [] } = useGetDisplaytextsQuery(locale, { skip: !defaultLocaleIsSuccess });
+    const [ postLogin ] = usePostLoginMutation();
+    const onLoginClicked = async () => { await postLogin({ username, password: btoa(password), locale }) }
 
     return (
         <div className="Login">
             <header>
                 <div className="pb-2 mt-4 mb-2 border-bottom bg-light">
-                    <h1>Handlelapp login</h1>
+                    <h1>Sampleapp login</h1>
                     <p id="messagebanner"></p>
                 </div>
             </header>
@@ -51,24 +54,11 @@ export default function Login() {
                     </div>
                     <div className="form-group row">
                         <div className="offset-xs-3 col-xs-9">
-                            <input
-                                className="btn btn-primary"
-                                type="submit" value="Login"
-                                onClick={() => dispatch(LOGIN_REQUEST({ username, password: btoa(password) }))}/>
+                            <input className="btn btn-primary" type="submit" value="Login" onClick={onLoginClicked}/>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
     );
-}
-
-function findReloadUrl(basename, originalRequestUrl) {
-    // If originalRequestUrl is empty go to the top.
-    // If originalRequest is /unauthorized go to the top and let shiro decide where to redirect to
-    if (!originalRequestUrl || originalRequestUrl === '/unauthorized') {
-        return basename + '/';
-    }
-
-    return basename + originalRequestUrl;
 }
