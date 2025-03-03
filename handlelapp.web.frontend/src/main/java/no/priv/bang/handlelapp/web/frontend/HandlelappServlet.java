@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Steinar Bang
+ * Copyright 2024-2025 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,13 +35,7 @@ public class HandlelappServlet extends FrontendServlet {
     private static final long serialVersionUID = -3496606785818930881L;
 
     public HandlelappServlet() {
-        super();
-        // The paths used by the react router
-        setRoutes(
-            "/",
-            "/counter",
-            "/login",
-            "/unauthorized");
+        super(HandlelappServlet.class);
     }
 
     @Override
