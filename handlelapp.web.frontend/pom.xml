@@ -33,7 +33,7 @@ under the License.
         <dependency>
             <groupId>no.priv.bang.handlelapp</groupId>
             <artifactId>handlelapp.web.api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
