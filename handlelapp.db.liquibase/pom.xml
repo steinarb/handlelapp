@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-Copyright 2024 Steinar Bang
+Copyright 2024-2025 Steinar Bang
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -30,6 +30,17 @@ under the License.
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>no.priv.bang.karaf</groupId>
+            <artifactId>liquibase-core-karaf</artifactId>
+            <type>xml</type>
+            <classifier>features</classifier>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -74,17 +85,6 @@ under the License.
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>no.priv.bang.karaf</groupId>
-            <artifactId>liquibase-core-karaf</artifactId>
-            <type>xml</type>
-            <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>org.apache.shiro</groupId>

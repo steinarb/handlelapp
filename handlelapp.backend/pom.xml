@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-Copyright 2024 Steinar Bang
+Copyright 2024-2025 Steinar Bang
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -55,18 +55,6 @@ under the License.
             <classifier>features</classifier>
         </dependency>
         <dependency>
-            <groupId>no.priv.bang.handlelapp</groupId>
-            <artifactId>handlelapp.db.liquibase.test</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>no.priv.bang.handlelapp</groupId>
-            <artifactId>handlelapp.db.liquibase</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.core</artifactId>
             <scope>provided</scope>
@@ -85,6 +73,18 @@ under the License.
             <groupId>org.ops4j.pax.jdbc</groupId>
             <artifactId>pax-jdbc</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>no.priv.bang.handlelapp</groupId>
+            <artifactId>handlelapp.db.liquibase.test</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>no.priv.bang.handlelapp</groupId>
+            <artifactId>handlelapp.db.liquibase</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
