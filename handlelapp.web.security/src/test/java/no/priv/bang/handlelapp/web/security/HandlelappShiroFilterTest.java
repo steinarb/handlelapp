@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Steinar Bang
+ * Copyright 2024-2025 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package no.priv.bang.handlelapp.web.security;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.config.Ini;
@@ -27,6 +28,8 @@ import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.web.env.IniWebEnvironment;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import no.priv.bang.authservice.definitions.CipherKeyService;
 
 class HandlelappShiroFilterTest {
 
@@ -41,9 +44,11 @@ class HandlelappShiroFilterTest {
 
     @Test
     void testAuthenticate() {
+        var cipherKeyService = mock(CipherKeyService.class);
         var filter = new HandlelappShiroFilter();
         filter.setRealm(realm);
         filter.setSession(session);
+        filter.setCipherKeyService(cipherKeyService);
         filter.activate();
         var securitymanager = filter.getSecurityManager();
         var token = new UsernamePasswordToken("jad", "1ad".toCharArray());
