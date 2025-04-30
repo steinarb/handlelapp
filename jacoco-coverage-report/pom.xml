@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-Copyright 2024 Steinar Bang
+Copyright 2024-2025 Steinar Bang
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -28,47 +28,38 @@ under the License.
         <dependency>
             <groupId>no.priv.bang.handlelapp</groupId>
             <artifactId>handlelapp.db.liquibase</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.handlelapp</groupId>
             <artifactId>handlelapp.db.liquibase.test</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.handlelapp</groupId>
             <artifactId>handlelapp.db.liquibase.production</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.handlelapp</groupId>
             <artifactId>handlelapp.services</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.handlelapp</groupId>
             <artifactId>handlelapp.backend</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.handlelapp</groupId>
             <artifactId>handlelapp.web.security</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.handlelapp</groupId>
             <artifactId>handlelapp.web.api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.handlelapp</groupId>
             <artifactId>handlelapp.web.frontend</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>no.priv.bang.handlelapp</groupId>
             <artifactId>handlelapp.tests</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
