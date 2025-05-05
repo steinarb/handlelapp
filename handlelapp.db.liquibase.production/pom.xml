@@ -130,6 +130,12 @@ under the License.
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -166,7 +172,7 @@ under the License.
                                     <artifactId>liquibase-core</artifactId>
                                 </artifactItem>
                             </artifactItems>
-                            <includes>**/dbchangelog-3.5.xsd</includes>
+                            <includes>**/dbchangelog-${liquibase.xsd-version}.xsd</includes>
                         </configuration>
                     </execution>
                 </executions>
