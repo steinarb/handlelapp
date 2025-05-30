@@ -28,6 +28,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardContextSelect;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardFilterPattern;
 
+import no.priv.bang.authservice.definitions.AuthserviceShiroConfigService;
 import no.priv.bang.authservice.definitions.CipherKeyService;
 import no.priv.bang.authservice.web.security.shirofilter.AuthserviceShiroFilterBase;
 
@@ -65,6 +66,10 @@ public class HandlelappShiroFilter extends AuthserviceShiroFilterBase { // NOSON
     @Activate
     public void activate() {
         createShiroWebEnvironmentFromIniFile(getClass().getClassLoader(), INI_FILE);
+    }
+
+    public void setShiroConfigService(AuthserviceShiroConfigService shiroConfigService) {
+        this.shiroConfigService = shiroConfigService;
     }
 
 }

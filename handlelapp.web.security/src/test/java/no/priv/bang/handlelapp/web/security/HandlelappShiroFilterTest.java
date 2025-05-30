@@ -29,6 +29,7 @@ import org.apache.shiro.web.env.IniWebEnvironment;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import no.priv.bang.authservice.definitions.AuthserviceShiroConfigService;
 import no.priv.bang.authservice.definitions.CipherKeyService;
 
 class HandlelappShiroFilterTest {
@@ -45,10 +46,12 @@ class HandlelappShiroFilterTest {
     @Test
     void testAuthenticate() {
         var cipherKeyService = mock(CipherKeyService.class);
+        var shiroConfigService = mock(AuthserviceShiroConfigService.class);
         var filter = new HandlelappShiroFilter();
         filter.setRealm(realm);
         filter.setSession(session);
         filter.setCipherKeyService(cipherKeyService);
+        filter.setShiroConfigService(shiroConfigService);
         filter.activate();
         var securitymanager = filter.getSecurityManager();
         var token = new UsernamePasswordToken("jad", "1ad".toCharArray());
