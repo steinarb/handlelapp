@@ -63,13 +63,14 @@ public class HandlelappShiroFilter extends AuthserviceShiroFilterBase { // NOSON
         this.cipherKeyService = cipherKeyService;
     }
 
+    @Reference
+    public void setShiroConfigService(AuthserviceShiroConfigService shiroConfigService) {
+        this.shiroConfigService = shiroConfigService;
+    }
+
     @Activate
     public void activate() {
         createShiroWebEnvironmentFromIniFile(getClass().getClassLoader(), INI_FILE);
-    }
-
-    public void setShiroConfigService(AuthserviceShiroConfigService shiroConfigService) {
-        this.shiroConfigService = shiroConfigService;
     }
 
 }
