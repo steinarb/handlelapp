@@ -19,7 +19,7 @@ under the License.
     <parent>
         <groupId>no.priv.bang.pom</groupId>
         <artifactId>bang-authservice-client-pom</artifactId>
-        <version>2.1.14</version>
+        <version>2.1.15</version>
     </parent>
     <groupId>no.priv.bang.handlelapp</groupId>
     <artifactId>handlelapp</artifactId>
@@ -30,6 +30,7 @@ under the License.
     <name>Handlelapp</name>
 
     <properties>
+        <junit.jupiter.version>5.13.4</junit.jupiter.version>
         <snakeyaml.version>1.17</snakeyaml.version>
         <open-iconic.version>1.1.1</open-iconic.version>
         <sonar.cpd.exclusions>
@@ -51,6 +52,13 @@ under the License.
                 <groupId>no.priv.bang.pom</groupId>
                 <artifactId>bang-bom</artifactId>
                 <version>${bang-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit.jupiter.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
