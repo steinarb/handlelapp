@@ -17,7 +17,7 @@ updates:
   schedule:
     interval: "daily"
 - package-ecosystem: "npm"
-  directory: "/sampleapp.web.frontend/src/main/frontend/"
+  directory: "/handlelapp.web.frontend/src/main/frontend/"
   schedule:
     interval: "daily"
   groups:

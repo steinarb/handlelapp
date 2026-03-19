@@ -140,11 +140,11 @@ class HandlelappWebApiTest extends ShiroTestBase {
     void testGetCounterIncrementStepWhenNotLoggedIn() throws Exception {
         var incrementStepValue = 1;
         var logservice = new MockLogService();
-        var sampleapp = mock(HandlelappService.class);
+        var handlelapp = mock(HandlelappService.class);
         var optionalIncrementStep = Optional.of(CounterIncrementStepBean.with().counterIncrementStep(incrementStepValue).build());
-        when(sampleapp.getCounterIncrementStep(anyString())).thenReturn(optionalIncrementStep);
+        when(handlelapp.getCounterIncrementStep(anyString())).thenReturn(optionalIncrementStep);
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(sampleapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
         var request = buildGetUrl("/counter/incrementstep/jad");
         var response = new MockHttpServletResponse();
 
@@ -157,11 +157,11 @@ class HandlelappWebApiTest extends ShiroTestBase {
     void testGetCounterIncrementStepWhenUserLacksRole() throws Exception {
         var incrementStepValue = 1;
         var logservice = new MockLogService();
-        var sampleapp = mock(HandlelappService.class);
+        var handlelapp = mock(HandlelappService.class);
         var optionalIncrementStep = Optional.of(CounterIncrementStepBean.with().counterIncrementStep(incrementStepValue).build());
-        when(sampleapp.getCounterIncrementStep(anyString())).thenReturn(optionalIncrementStep);
+        when(handlelapp.getCounterIncrementStep(anyString())).thenReturn(optionalIncrementStep);
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(sampleapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
         var request = buildGetUrl("/counter/incrementstep/jad");
         var response = new MockHttpServletResponse();
 

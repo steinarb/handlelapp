@@ -30,7 +30,7 @@ export default function Home() {
                 <a className="btn btn-primary left-align-cell" href="../..">
                     <ChevronLeft />&nbsp;{text.gohome}!
                 </a>
-                <h1>Sampleapp</h1>
+                <h1>Handlelapp</h1>
                 <NavLink className="btn btn-primary" to="/counter">{text.counter}</NavLink>
                 <Locale />
             </nav>
