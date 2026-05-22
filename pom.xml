@@ -319,16 +319,18 @@ under the License.
         </profile>
     </profiles>
 
-    <modules>  <module>handlelapp.db.liquibase</module>
-    <module>handlelapp.db.liquibase.test</module>
-    <module>handlelapp.db.liquibase.production</module>
-    <module>handlelapp.services</module>
-    <module>handlelapp.backend</module>
-    <module>handlelapp.backend.testdata</module>
-    <module>handlelapp.web.security</module>
-    <module>handlelapp.web.api</module>
-    <module>handlelapp.web.frontend</module>
-    <module>karaf</module>
-    <module>handlelapp.tests</module>
-    <module>jacoco-coverage-report</module>
-</modules></project>
+    <modules>
+        <module>handlelapp.db.liquibase</module>
+        <module>handlelapp.db.liquibase.test</module>
+        <module>handlelapp.db.liquibase.production</module>
+        <module>handlelapp.services</module>
+        <module>handlelapp.backend</module>
+        <module>handlelapp.backend.testdata</module>
+        <module>handlelapp.web.security</module>
+        <module>handlelapp.web.api</module>
+        <module>handlelapp.web.frontend</module>
+        <module>karaf</module>
+        <module>handlelapp.tests</module>
+        <module>jacoco-coverage-report</module>
+    </modules>
+</project>
