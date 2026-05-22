@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Steinar Bang
+ * Copyright 2024-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,10 @@
  */
 package no.priv.bang.handlelapp.web.api;
 
+import static org.mockito.AdditionalAnswers.delegatesTo;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.withSettings;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -80,7 +83,7 @@ public class ShiroTestBase {
     }
 
     protected WebSubject createSubjectAndBindItToThread(HttpServletRequest request, HttpServletResponse response) {
-        var subject = new WebSubject.Builder(getSecurityManager(), request, response).buildWebSubject();
+        var subject = new WebSubject.Builder(getSecurityManager(), wrapRequestInMock(request), response).buildWebSubject();
         ThreadContext.bind(subject);
         return subject;
     }
@@ -95,6 +98,13 @@ public class ShiroTestBase {
         }
 
         return securitymanager;
+    }
+
+    // Workaround for MockHttpServletRequest not implementing all methods of HttpServletRequest interface in classpath
+    private HttpServletRequest wrapRequestInMock(HttpServletRequest request) {
+        var wrapped = mock(HttpServletRequest.class, withSettings().defaultAnswer(delegatesTo(request)));
+        doReturn("").when(wrapped).changeSessionId();
+        return wrapped;
     }
 
     private static SimpleAccountRealm findRealmFromSecurityManager(WebSecurityManager securitymanager) {
