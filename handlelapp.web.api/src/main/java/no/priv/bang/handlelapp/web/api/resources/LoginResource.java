@@ -1,5 +1,6 @@
+package no.priv.bang.handlelapp.web.api.resources;
 /*
- * Copyright 2024 Steinar Bang
+ * Copyright 2024-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +14,6 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.handlelapp.web.api.resources;
 
 import static no.priv.bang.handlelapp.services.HandlelappConstants.*;
 
@@ -39,7 +39,6 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.SavedRequest;
 import org.apache.shiro.web.util.WebUtils;
 import org.osgi.service.log.LogService;
@@ -79,8 +78,8 @@ public class LoginResource {
     @POST
     @Path("/login")
     public Loginresult login(@QueryParam("locale")String locale, Credentials credentials) {
-        Subject subject = SecurityUtils.getSubject();
-        String username = credentials.username();
+        var subject = SecurityUtils.getSubject();
+        var username = credentials.username();
         var decodedPassword = new String(Base64.getDecoder().decode(credentials.password()));
 
         var token = new UsernamePasswordToken(username, decodedPassword, true);
@@ -92,12 +91,12 @@ public class LoginResource {
                 .map(SavedRequest::getRequestUrl)
                 .map(url -> url.replace(contextpath, ""))
                 .orElse("/");
-            boolean authorized = subject.hasRole(HANDLELAPPUSER_ROLE);
+            var authorized = subject.hasRole(HANDLELAPPUSER_ROLE);
             if (authorized) {
                 handlelapp.lazilyCreateAccount(username);
             }
 
-            User user = useradmin.getUser(username);
+            var user = useradmin.getUser(username);
 
             return Loginresult.with()
                 .success(true)
@@ -129,7 +128,7 @@ public class LoginResource {
     @GET
     @Path("/logout")
     public Loginresult logout(@QueryParam("locale")String locale) {
-        Subject subject = SecurityUtils.getSubject();
+        var subject = SecurityUtils.getSubject();
         subject.logout();
 
         return Loginresult.with()
@@ -142,15 +141,15 @@ public class LoginResource {
     @GET
     @Path("/loginstate")
     public Loginresult loginstate(@QueryParam("locale")String locale) {
-        Subject subject = SecurityUtils.getSubject();
-        String username = (String) subject.getPrincipal();
-        boolean success = subject.isAuthenticated();
-        boolean harRoleHandlelappuser = subject.hasRole(HANDLELAPPUSER_ROLE);
-        String brukerLoggetInnMelding = harRoleHandlelappuser ?
+        var subject = SecurityUtils.getSubject();
+        var username = (String) subject.getPrincipal();
+        var success = subject.isAuthenticated();
+        var harRoleHandlelappuser = subject.hasRole(HANDLELAPPUSER_ROLE);
+        var brukerLoggetInnMelding = harRoleHandlelappuser ?
             handlelapp.displayText("userloggedinwithaccesses", locale) :
             handlelapp.displayText("userloggedinwithoutaccesses", locale);
-        String melding = success ? brukerLoggetInnMelding : handlelapp.displayText("usernotloggedin", locale);
-        User user = findUserSafely(username);
+        var melding = success ? brukerLoggetInnMelding : handlelapp.displayText("usernotloggedin", locale);
+        var user = findUserSafely(username);
         return Loginresult.with()
             .success(success)
             .errormessage(melding)
@@ -168,9 +167,9 @@ public class LoginResource {
     }
 
     String findOriginalRequestUrl() {
-        SavedRequest savedRequest = WebUtils.getSavedRequest(request);
-        String contextPath = request.getContextPath();
-        String originalRequestUrl = savedRequest != null ? savedRequest.getRequestUrl() : null;
+        var savedRequest = WebUtils.getSavedRequest(request);
+        var contextPath = request.getContextPath();
+        var originalRequestUrl = savedRequest != null ? savedRequest.getRequestUrl() : null;
         if (contextPath != null && originalRequestUrl != null) {
             return originalRequestUrl.replaceFirst(contextPath, "");
         }
