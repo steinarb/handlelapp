@@ -145,9 +145,7 @@ public class LoginResource {
         var username = (String) subject.getPrincipal();
         var success = subject.isAuthenticated();
         var harRoleHandlelappuser = subject.hasRole(HANDLELAPPUSER_ROLE);
-        var brukerLoggetInnMelding = harRoleHandlelappuser ?
-            handlelapp.displayText("userloggedinwithaccesses", locale) :
-            handlelapp.displayText("userloggedinwithoutaccesses", locale);
+        var brukerLoggetInnMelding = handlelapp.displayText(harRoleHandlelappuser ? "userloggedinwithaccesses" : "userloggedinwithoutaccesses", locale);
         var melding = success ? brukerLoggetInnMelding : handlelapp.displayText("usernotloggedin", locale);
         var user = findUserSafely(username);
         return Loginresult.with()
