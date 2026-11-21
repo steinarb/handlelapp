@@ -1,5 +1,6 @@
+package no.priv.bang.handlelapp.web.frontend;
 /*
- * Copyright 2024-2025 Steinar Bang
+ * Copyright 2024-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +14,14 @@
  * See the License for the specific language governing permissions and limitations
  * under the package.
  */
-package no.priv.bang.handlelapp.web.frontend;
 
 import javax.servlet.Servlet;
 
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.*;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardContextSelect;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
-import org.osgi.service.log.LogService;
 
 import no.priv.bang.servlet.frontend.FrontendServlet;
 
@@ -36,11 +34,5 @@ public class HandlelappServlet extends FrontendServlet {
 
     public HandlelappServlet() {
         super(HandlelappServlet.class);
-    }
-
-    @Override
-    @Reference
-    public void setLogService(LogService logservice) {
-        super.setLogService(logservice);
     }
 }

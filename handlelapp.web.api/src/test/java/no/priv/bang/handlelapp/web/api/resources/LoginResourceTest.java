@@ -1,5 +1,6 @@
+package no.priv.bang.handlelapp.web.api.resources;
 /*
- * Copyright 2024 Steinar Bang
+ * Copyright 2024-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +14,6 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.handlelapp.web.api.resources;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -34,7 +34,6 @@ import no.priv.bang.handlelapp.services.HandlelappService;
 import no.priv.bang.handlelapp.services.beans.Credentials;
 import no.priv.bang.handlelapp.web.api.ShiroTestBase;
 import no.priv.bang.authservice.definitions.AuthserviceException;
-import no.priv.bang.osgi.service.mocks.logservice.MockLogService;
 import no.priv.bang.osgiservice.users.UserManagementService;
 
 class LoginResourceTest extends ShiroTestBase {
@@ -42,14 +41,12 @@ class LoginResourceTest extends ShiroTestBase {
     @Test
     void testLogin() {
         var request = new MockHttpServletRequest();
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var useradmin = mock(UserManagementService.class);
         var webcontext = new MockServletContext();
         webcontext.setContextPath("/handlelapp");
         var resource = new LoginResource();
         resource.webcontext = webcontext;
-        resource.setLogservice(logservice);
         resource.request = request;
         resource.handlelapp = handlelapp;
         resource.useradmin = useradmin;
@@ -67,14 +64,12 @@ class LoginResourceTest extends ShiroTestBase {
     @Test
     void testLoginByUserWithoutRole() {
         var request = new MockHttpServletRequest();
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var useradmin = mock(UserManagementService.class);
         var webcontext = new MockServletContext();
         webcontext.setContextPath("/handlelapp");
         var resource = new LoginResource();
         resource.webcontext = webcontext;
-        resource.setLogservice(logservice);
         resource.request = request;
         resource.handlelapp = handlelapp;
         resource.useradmin = useradmin;
@@ -92,14 +87,12 @@ class LoginResourceTest extends ShiroTestBase {
     void testLoginWithOriginalRequestUrl() {
         var request = new MockHttpServletRequest()
             .setContextPath("/handlelapp");
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var useradmin = mock(UserManagementService.class);
         var webcontext = new MockServletContext();
         webcontext.setContextPath("/handlelapp");
         var resource = new LoginResource();
         resource.webcontext = webcontext;
-        resource.setLogservice(logservice);
         resource.request = request;
         resource.handlelapp = handlelapp;
         resource.useradmin = useradmin;
@@ -121,10 +114,8 @@ class LoginResourceTest extends ShiroTestBase {
     void testLoginFeilPassord() {
         var handlelapp = mock(HandlelappService.class);
         when(handlelapp.displayText(anyString(), anyString())).thenReturn("Feil passord");
-        var logservice = new MockLogService();
         var resource = new LoginResource();
         resource.handlelapp = handlelapp;
-        resource.setLogservice(logservice);
         var username = "jd";
         var password = Base64.getEncoder().encodeToString("feil".getBytes());
         createSubjectAndBindItToThread();
@@ -139,10 +130,8 @@ class LoginResourceTest extends ShiroTestBase {
     void testLoginUkjentBrukernavn() {
         var handlelapp = mock(HandlelappService.class);
         when(handlelapp.displayText(anyString(), anyString())).thenReturn("Ukjent konto");
-        var logservice = new MockLogService();
         var resource = new LoginResource();
         resource.handlelapp = handlelapp;
-        resource.setLogservice(logservice);
         var username = "jdd";
         var password = Base64.getEncoder().encodeToString("feil".getBytes());
         createSubjectAndBindItToThread();
@@ -165,11 +154,9 @@ class LoginResourceTest extends ShiroTestBase {
     @Test
     void testLogout() {
         var locale = "nb_NO";
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         when(handlelapp.displayText(anyString(), anyString())).thenReturn("Logget ut");
         var resource = new LoginResource();
-        resource.setLogservice(logservice);
         resource.handlelapp = handlelapp;
         var username = "jd";
         var password = "johnnyBoi";
@@ -188,12 +175,10 @@ class LoginResourceTest extends ShiroTestBase {
     @Test
     void testGetLoginstateWhenLoggedIn() {
         var locale = "nb_NO";
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         when(handlelapp.displayText(anyString(), anyString())).thenReturn("Bruker er logget inn og har tilgang");
         var useradmin = mock(UserManagementService.class);
         var resource = new LoginResource();
-        resource.setLogservice(logservice);
         resource.handlelapp = handlelapp;
         resource.useradmin = useradmin;
         var username = "jad";
@@ -211,12 +196,10 @@ class LoginResourceTest extends ShiroTestBase {
     @Test
     void testGetLoginstateWhenLoggedInButUserDoesntHaveRoleHandlelappuser() {
         var locale = "nb_NO";
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         when(handlelapp.displayText(anyString(), anyString())).thenReturn("Bruker er logget inn men mangler tilgang");
         var useradmin = mock(UserManagementService.class);
         var resource = new LoginResource();
-        resource.setLogservice(logservice);
         resource.handlelapp = handlelapp;
         resource.useradmin = useradmin;
         var username = "jd";

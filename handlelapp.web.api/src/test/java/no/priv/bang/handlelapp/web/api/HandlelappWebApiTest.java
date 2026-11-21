@@ -1,5 +1,6 @@
+package no.priv.bang.handlelapp.web.api;
 /*
- * Copyright 2024 Steinar Bang
+ * Copyright 2024-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +14,6 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.handlelapp.web.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,7 +35,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.glassfish.jersey.server.ServerProperties;
 import org.junit.jupiter.api.Test;
-import org.osgi.service.log.LogService;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -50,7 +49,6 @@ import no.priv.bang.handlelapp.services.beans.CounterIncrementStepBean;
 import no.priv.bang.handlelapp.services.beans.Credentials;
 import no.priv.bang.handlelapp.services.beans.LocaleBean;
 import no.priv.bang.handlelapp.web.api.resources.ErrorMessage;
-import no.priv.bang.osgi.service.mocks.logservice.MockLogService;
 import no.priv.bang.osgiservice.users.UserManagementService;
 
 class HandlelappWebApiTest extends ShiroTestBase {
@@ -66,10 +64,9 @@ class HandlelappWebApiTest extends ShiroTestBase {
         var username = "jd";
         var password = Base64.getEncoder().encodeToString("johnnyBoi".getBytes());
         var credentials = Credentials.with().username(username).password(password).build();
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
         createSubjectAndBindItToThread();
         var request = buildPostUrl("/login");
         var postBody = mapper.writeValueAsString(credentials);
@@ -85,10 +82,9 @@ class HandlelappWebApiTest extends ShiroTestBase {
         var username = "jd";
         var password = Base64.getEncoder().encodeToString("johnniBoi".getBytes());
         var credentials = Credentials.with().username(username).password(password).build();
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
         createSubjectAndBindItToThread();
         var request = buildPostUrl("/login");
         var postBody = mapper.writeValueAsString(credentials);
@@ -101,12 +97,11 @@ class HandlelappWebApiTest extends ShiroTestBase {
 
     @Test
     void testGetAccounts() throws Exception {
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var account = Account.with().accountId(123).build();
         when(handlelapp.getAccounts()).thenReturn(Collections.singletonList(account));
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
         var request = buildGetUrl("/accounts");
         var response = new MockHttpServletResponse();
 
@@ -120,12 +115,11 @@ class HandlelappWebApiTest extends ShiroTestBase {
     @Test
     void testGetCounterIncrementStep() throws Exception {
         int incrementStepValue = 1;
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var optionalIncrementStep = Optional.of(CounterIncrementStepBean.with().counterIncrementStep(incrementStepValue).build());
         when(handlelapp.getCounterIncrementStep(anyString())).thenReturn(optionalIncrementStep);
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
         var request = buildGetUrl("/counter/incrementstep/jad");
         var response = new MockHttpServletResponse();
 
@@ -139,12 +133,11 @@ class HandlelappWebApiTest extends ShiroTestBase {
     @Test
     void testGetCounterIncrementStepWhenNotLoggedIn() throws Exception {
         var incrementStepValue = 1;
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var optionalIncrementStep = Optional.of(CounterIncrementStepBean.with().counterIncrementStep(incrementStepValue).build());
         when(handlelapp.getCounterIncrementStep(anyString())).thenReturn(optionalIncrementStep);
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
         var request = buildGetUrl("/counter/incrementstep/jad");
         var response = new MockHttpServletResponse();
 
@@ -156,12 +149,11 @@ class HandlelappWebApiTest extends ShiroTestBase {
     @Test
     void testGetCounterIncrementStepWhenUserLacksRole() throws Exception {
         var incrementStepValue = 1;
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var optionalIncrementStep = Optional.of(CounterIncrementStepBean.with().counterIncrementStep(incrementStepValue).build());
         when(handlelapp.getCounterIncrementStep(anyString())).thenReturn(optionalIncrementStep);
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
         var request = buildGetUrl("/counter/incrementstep/jad");
         var response = new MockHttpServletResponse();
 
@@ -172,10 +164,9 @@ class HandlelappWebApiTest extends ShiroTestBase {
 
     @Test
     void testGetCounterIncrementStepWhenNotFound() throws Exception {
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
         var request = buildGetUrl("/counter/incrementstep/jad");
         var response = new MockHttpServletResponse();
 
@@ -187,12 +178,11 @@ class HandlelappWebApiTest extends ShiroTestBase {
     @Test
     void testUpdateCounterIncrementStep() throws Exception {
         int incrementStepValue = 1;
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var optionalIncrementStep = Optional.of(CounterIncrementStepBean.with().counterIncrementStep(incrementStepValue).build());
         when(handlelapp.updateCounterIncrementStep(any())).thenReturn(optionalIncrementStep);
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
         var updateIncrementStep = CounterIncrementStepBean.with()
             .username("jad")
             .counterIncrementStep(incrementStepValue)
@@ -211,10 +201,9 @@ class HandlelappWebApiTest extends ShiroTestBase {
 
     @Test
     void testUpdateCounterIncrementStepWhenUpdateFails() throws Exception {
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
         var updateIncrementStep = CounterIncrementStepBean.with()
             .username("jad")
             .counterIncrementStep(3)
@@ -232,12 +221,11 @@ class HandlelappWebApiTest extends ShiroTestBase {
     @Test
     void testGetCounter() throws Exception {
         int counterValue = 3;
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var optionalCounter = Optional.of(CounterBean.with().counter(counterValue).build());
         when(handlelapp.getCounter(anyString())).thenReturn(optionalCounter);
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
         var request = buildGetUrl("/counter/jad");
         var response = new MockHttpServletResponse();
 
@@ -250,10 +238,9 @@ class HandlelappWebApiTest extends ShiroTestBase {
 
     @Test
     void testGetCounterWhenNotFound() throws Exception {
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
         var request = buildGetUrl("/counter/jad");
         var response = new MockHttpServletResponse();
 
@@ -265,12 +252,11 @@ class HandlelappWebApiTest extends ShiroTestBase {
     @Test
     void testIncrementCounter() throws Exception {
         int counterValue = 3;
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var optionalCounter = Optional.of(CounterBean.with().counter(counterValue).build());
         when(handlelapp.incrementCounter(anyString())).thenReturn(optionalCounter);
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
         var request = buildGetUrl("/counter/jad/increment");
         var response = new MockHttpServletResponse();
 
@@ -283,10 +269,9 @@ class HandlelappWebApiTest extends ShiroTestBase {
 
     @Test
     void testIncrementCounterWhenFailing() throws Exception {
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
         var request = buildGetUrl("/counter/jad/increment");
         var response = new MockHttpServletResponse();
 
@@ -298,12 +283,11 @@ class HandlelappWebApiTest extends ShiroTestBase {
     @Test
     void testDecrementCounter() throws Exception {
         int counterValue = 3;
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var optionalCounter = Optional.of(CounterBean.with().counter(counterValue).build());
         when(handlelapp.decrementCounter(anyString())).thenReturn(optionalCounter);
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
         var request = buildGetUrl("/counter/jad/decrement");
         var response = new MockHttpServletResponse();
 
@@ -316,10 +300,9 @@ class HandlelappWebApiTest extends ShiroTestBase {
 
     @Test
     void testDecrementCounterWhenFailing() throws Exception {
-        var logservice = new MockLogService();
         var handlelapp = mock(HandlelappService.class);
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
         var request = buildGetUrl("/counter/jad/decrement");
         var response = new MockHttpServletResponse();
 
@@ -333,10 +316,8 @@ class HandlelappWebApiTest extends ShiroTestBase {
         // Set up REST API servlet with mocked services
         var handlelapp = mock(HandlelappService.class);
         when(handlelapp.defaultLocale()).thenReturn(NB_NO);
-        var logservice = new MockLogService();
-
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
 
         // Create the request and response
         var request = buildGetUrl("/defaultlocale");
@@ -356,10 +337,8 @@ class HandlelappWebApiTest extends ShiroTestBase {
         // Set up REST API servlet with mocked services
         var handlelapp = mock(HandlelappService.class);
         when(handlelapp.availableLocales()).thenReturn(Collections.singletonList(Locale.forLanguageTag("nb-NO")).stream().map(l -> LocaleBean.with().locale(l).build()).toList());
-        var logservice = new MockLogService();
-
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
 
         // Create the request and response
         var request = buildGetUrl("/availablelocales");
@@ -382,10 +361,8 @@ class HandlelappWebApiTest extends ShiroTestBase {
         var texts = new HashMap<String, String>();
         texts.put("date", "Dato");
         when(handlelapp.displayTexts(NB_NO)).thenReturn(texts);
-        var logservice = new MockLogService();
-
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
 
         // Create the request and response
         var request = buildGetUrl("/displaytexts");
@@ -409,10 +386,8 @@ class HandlelappWebApiTest extends ShiroTestBase {
         var texts = new HashMap<>();
         texts.put("date", "Dato");
         when(handlelapp.displayTexts(EN_UK)).thenThrow(MissingResourceException.class);
-        var logservice = new MockLogService();
-
         var useradmin = mock(UserManagementService.class);
-        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin, logservice);
+        var servlet = simulateDSComponentActivationAndWebWhiteboardConfiguration(handlelapp , useradmin);
 
         // Create the request and response
         var request = buildGetUrl("/displaytexts");
@@ -457,9 +432,8 @@ class HandlelappWebApiTest extends ShiroTestBase {
         return request;
     }
 
-    private HandlelappWebApi simulateDSComponentActivationAndWebWhiteboardConfiguration(HandlelappService handlelapp, UserManagementService useradmin, LogService logservice) throws Exception {
+    private HandlelappWebApi simulateDSComponentActivationAndWebWhiteboardConfiguration(HandlelappService handlelapp, UserManagementService useradmin) throws Exception {
         var servlet = new HandlelappWebApi();
-        servlet.setLogService(logservice);
         servlet.setHandlelappService(handlelapp);
         servlet.setUseradmin(useradmin);
         servlet.activate();

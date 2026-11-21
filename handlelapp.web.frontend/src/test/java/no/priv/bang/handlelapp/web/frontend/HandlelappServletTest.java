@@ -1,5 +1,6 @@
+package no.priv.bang.handlelapp.web.frontend;
 /*
- * Copyright 2024 Steinar Bang
+ * Copyright 2024-2026 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +14,12 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package no.priv.bang.handlelapp.web.frontend;
 
 import static org.junit.Assert.*;
 import static org.assertj.core.api.Assertions.*;
 import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
-
-import no.priv.bang.osgi.service.mocks.logservice.MockLogService;
 
 import static org.mockito.Mockito.*;
 
@@ -35,12 +33,10 @@ public class HandlelappServletTest {
 
     @Test
     public void testGet() throws Exception {
-        var logservice = new MockLogService();
         var servlet = new HandlelappServlet();
         var servletConfig = mock(ServletConfig.class);
         when(servletConfig.getInitParameter("from")).thenReturn("to");
         servlet.init(servletConfig);
-        servlet.setLogService(logservice);
         var request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestURI()).thenReturn("http://localhost:8181/handlelapp/useradmin/");
@@ -57,7 +53,6 @@ public class HandlelappServletTest {
 
     @Test
     public void testDoGetAddTrailingSlash() throws Exception {
-        var logservice = new MockLogService();
         var request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8181/handlelapp/useradmin"));
@@ -65,7 +60,6 @@ public class HandlelappServletTest {
         var response = new MockHttpServletResponse();
 
         var servlet = new HandlelappServlet();
-        servlet.setLogService(logservice);
 
         servlet.service(request, response);
 
@@ -74,7 +68,6 @@ public class HandlelappServletTest {
 
     @Test
     public void testDoGetResponseThrowsIOException() throws Exception {
-        var logservice = new MockLogService();
         var request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestURI()).thenReturn("http://localhost:8181/handlelapp/useradmin/");
@@ -86,7 +79,6 @@ public class HandlelappServletTest {
         when(response.getOutputStream()).thenReturn(streamThrowingIOException);
 
         var servlet = new HandlelappServlet();
-        servlet.setLogService(logservice);
 
         servlet.service(request, response);
 
@@ -95,7 +87,6 @@ public class HandlelappServletTest {
 
     @Test
     public void testDoGetResponseStreamMethodThrowsIOException() throws Exception {
-        var logservice = new MockLogService();
         var request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestURI()).thenReturn("http://localhost:8181/handlelapp/useradmin/");
@@ -105,7 +96,6 @@ public class HandlelappServletTest {
         when(response.getOutputStream()).thenThrow(IOException.class);
 
         var servlet = new HandlelappServlet();
-        servlet.setLogService(logservice);
 
         servlet.service(request, response);
 
@@ -114,7 +104,6 @@ public class HandlelappServletTest {
 
     @Test
     public void testDoGetResourceNotFound() throws Exception {
-        var logservice = new MockLogService();
         var request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestURI()).thenReturn("http://localhost:8181/handlelapp/useradmin/static/nosuchname.png");
@@ -122,7 +111,6 @@ public class HandlelappServletTest {
         var response = new MockHttpServletResponse();
 
         var servlet = new HandlelappServlet();
-        servlet.setLogService(logservice);
 
         servlet.service(request, response);
 
